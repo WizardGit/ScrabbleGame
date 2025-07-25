@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
+            LettersLabel = new Label();
+            ProgressLabel = new Label();
+            InstructionsLabel = new Label();
             LettersTextbox = new TextBox();
             MaskTextBox = new TextBox();
             LineCheckMaskTextBox = new TextBox();
@@ -46,32 +46,32 @@
             SortComboBox = new ComboBox();
             SuspendLayout();
             // 
-            // label1
+            // LettersLabel
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(12, 22);
-            label1.Name = "label1";
-            label1.Size = new Size(38, 15);
-            label1.TabIndex = 0;
-            label1.Text = "label1";
+            LettersLabel.AutoSize = true;
+            LettersLabel.Location = new Point(12, 22);
+            LettersLabel.Name = "LettersLabel";
+            LettersLabel.Size = new Size(42, 15);
+            LettersLabel.TabIndex = 0;
+            LettersLabel.Text = "Letters";
             // 
-            // label2
+            // ProgressLabel
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(205, 146);
-            label2.Name = "label2";
-            label2.Size = new Size(38, 15);
-            label2.TabIndex = 1;
-            label2.Text = "label2";
+            ProgressLabel.AutoSize = true;
+            ProgressLabel.Location = new Point(205, 146);
+            ProgressLabel.Name = "ProgressLabel";
+            ProgressLabel.Size = new Size(52, 15);
+            ProgressLabel.TabIndex = 1;
+            ProgressLabel.Text = "Progress";
             // 
-            // label3
+            // InstructionsLabel
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(205, 232);
-            label3.Name = "label3";
-            label3.Size = new Size(38, 15);
-            label3.TabIndex = 2;
-            label3.Text = "label3";
+            InstructionsLabel.AutoSize = true;
+            InstructionsLabel.Location = new Point(205, 232);
+            InstructionsLabel.Name = "InstructionsLabel";
+            InstructionsLabel.Size = new Size(126, 15);
+            InstructionsLabel.TabIndex = 2;
+            InstructionsLabel.Text = "Use * as wildcard letter";
             // 
             // LettersTextbox
             // 
@@ -238,9 +238,9 @@
             Controls.Add(LineCheckMaskTextBox);
             Controls.Add(MaskTextBox);
             Controls.Add(LettersTextbox);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(label1);
+            Controls.Add(InstructionsLabel);
+            Controls.Add(ProgressLabel);
+            Controls.Add(LettersLabel);
             Name = "MainForm";
             Text = "MainForm";
             Load += MainForm_Load;
@@ -250,9 +250,9 @@
 
         #endregion
 
-        private Label label1;
-        private Label label2;
-        private Label label3;
+        private Label LettersLabel;
+        private Label ProgressLabel;
+        private Label InstructionsLabel;
         private TextBox LettersTextbox;
         private TextBox MaskTextBox;
         private TextBox LineCheckMaskTextBox;
