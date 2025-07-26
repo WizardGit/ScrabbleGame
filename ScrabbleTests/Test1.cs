@@ -17,5 +17,12 @@ namespace ScrabbleTests
             Word word = new Word("TestWord");
             Assert.AreEqual(word.Value, "testword");
         }
+
+        [TestMethod]
+        public void TestMethod3()
+        {
+            Letter letter = new Letter('a');
+            Assert.AreEqual(letter.Value, 'a');
+        }
     }
 }

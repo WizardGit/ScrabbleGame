@@ -224,7 +224,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(775, 399);
+            ClientSize = new Size(772, 392);
             Controls.Add(SortComboBox);
             Controls.Add(gridTableLayout);
             Controls.Add(ProgressBar);

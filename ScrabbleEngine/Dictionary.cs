@@ -44,5 +44,17 @@ namespace ScrabbleEngine
         {
             return new Word(this.dictionary[index]);
         }
+
+        public bool CheckWord(string pWord)
+        {
+            foreach (string word in dictionary)
+            {
+                if (word == pWord)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

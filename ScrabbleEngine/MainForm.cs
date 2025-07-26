@@ -1,9 +1,7 @@
 
 /*
  * TODO:
- * allow text box mask to restrict possible letters
- * line method to be passed a board and copy squares from a row or column to itself so it can be checked
- * board method to go square by square and refresh possible letters in that square
+ * allow text box mask to restrict possible letters - maybe not mask it, but just send message box 
  * Add ability to place a word on the board
  */
 
