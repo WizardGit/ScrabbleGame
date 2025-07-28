@@ -97,6 +97,6 @@ namespace ScrabbleEngine
         public bool RemoveLetter(Letter pLetter)
         {
             return validValues.Remove(validValues.Find(p => p.Value == pLetter.Value));
-        }
+        }        
     }
 }

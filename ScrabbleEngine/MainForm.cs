@@ -88,7 +88,7 @@ namespace ScrabbleEngine
 
         private void ProcessBtn_Click(object sender, EventArgs e)
         {
-            string strLetters = LettersTextbox.Text;
+            string strLetters = LettersTextbox.Text.ToLower().Trim();
             string strMask = MaskTextBox.Text;
 
             Line line = new Line(strMask);
@@ -181,6 +181,35 @@ namespace ScrabbleEngine
             else
             {
                 throw new Exception("Not Valid selection");
+            }
+        }
+
+        private void ListWordsBtn_Click(object sender, EventArgs e)
+        {
+            string strLetters = LettersTextbox.Text.ToLower().Trim();
+            List<Word> lstStrWords = dataBoard.BoardCheck(strLetters, ProgressBar);
+            DisplayListBox.Items.Clear();
+
+            foreach (Word word in lstStrWords)
+            {
+                DisplayListBox.Items.Add(word.PrintWordPoints());
+            }
+        }
+
+        private void RefreshValidBtn_Click(object sender, EventArgs e)
+        {
+            dataBoard.RefreshBoard(ProgressBar);
+        }
+
+        private void ValidateWordsBtn_Click(object sender, EventArgs e)
+        {
+            if (dataBoard.CheckPlayedWords(out string wrongWord) == false)
+            {
+                MessageBox.Show(wrongWord + " is NOT a valid Scrabble word!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("All words are valid Scrabble words!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }

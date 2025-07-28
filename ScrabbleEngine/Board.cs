@@ -46,18 +46,45 @@ namespace ScrabbleEngine
 
             DiamondReflectBonus(Square.BonusType.tripleWord, 7, 0);
             DiamondReflectBonus(Square.BonusType.doubleLetter, 7, 3);
+        }        
+
+        public Square this[int row, int column]
+        {
+            get { return this.grid[row, column]; }
+        }
+
+        public bool IsEmpty()
+        {
+            for (int r = 0; r < gridDimension; r++)
+            {
+                for (int c = 0; c < gridDimension; c++)
+                {
+                    if (grid[r, c].Value != Letter.NoLetter)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public List<Word> BoardCheck(string pstrLetters, ProgressBar pb)
-        {
+        {  
+            if (IsEmpty() == true)
+            {
+                Line simpleLine = new Line();
+                simpleLine.SimpleLineCheck(pstrLetters, out List<Word> pSimpleWordList, pb);
+                return pSimpleWordList;
+            }
+
             List<Word> possibleWordList = new List<Word>();
 
             for (int r = 0; r < gridDimension; r++)
             {
-                RowCheck(pstrLetters, out List<Word>pWordList, pb, r);
+                RowCheck(pstrLetters, out List<Word> pWordList, pb, r);
                 possibleWordList.AddRange(possibleWordList);
             }
-            
+
 
             for (int c = 0; c < gridDimension; c++)
             {
@@ -65,11 +92,6 @@ namespace ScrabbleEngine
                 possibleWordList.AddRange(possibleWordList);
             }
             return possibleWordList;
-        }
-
-        public Square this[int row, int column]
-        {
-            get { return this.grid[row, column]; }
         }
 
         private void SquareReflectBonus(Square.BonusType pBonus, int pRow, int pColumn)
@@ -131,15 +153,20 @@ namespace ScrabbleEngine
             }
         }
 
-        public void RefreshBoard()
+        public void RefreshBoard(ProgressBar pB)
         {
-            for(int r = 0;r < gridDimension; r++)
+            int intProgressValue = 0;
+            pB.Value = 0;
+            pB.Maximum = gridDimension * gridDimension;
+
+            for (int r = 0;r < gridDimension; r++)
             {
                 for (int c = 0;c < gridDimension; c++)
                 {
                     if (grid[r,c].Value != Letter.NoLetter)
                     {
                         RefreshSquare(r,c);
+                        pB.Value = intProgressValue++;
                     }
                 }
             }
@@ -220,6 +247,74 @@ namespace ScrabbleEngine
                     square.RemoveLetter(valchars[i]);
                 }
             }
+        }
+        public bool CheckPlayedWords(out string pWrongWord)
+        {
+            for (int r = 0; r < gridDimension; r++)
+            {
+                for (int c = 0; c < gridDimension; c++)
+                {
+                    if (grid[r, c].Value != Letter.NoLetter)
+                    {
+                        GetWord(r, c, out string pColWord, out string pRowWord);
+
+                        if (dict.CheckWord(pColWord) == false)
+                        {
+                            pWrongWord = pColWord;
+                            return false;
+                        }
+                        else if (dict.CheckWord(pRowWord) == false)
+                        {
+                            pWrongWord = pRowWord;
+                            return false;
+                        }
+                    }
+                }
+            }
+            pWrongWord = "";
+            return true;
+        }        
+
+        public bool GetWord(int pRowIndex, int pColIndex, out string pColWord, out string pRowWord)
+        {
+            if (grid[pRowIndex, pColIndex].Value == Letter.NoLetter)
+            {
+                pColWord = "";
+                pRowWord = "";
+                return false;
+            }
+
+            //Go to top 
+            int r = pRowIndex;
+            while ((r >= 0) && (this.grid[r, pColIndex].Value != Letter.NoLetter))
+            {
+                r--;
+            }
+            r++;
+            List<char> lstChars = new List<char>();
+
+            for (int i = r; ((i < (gridDimension - 1)) && (this.grid[r, pColIndex].Value != Letter.NoLetter)) ; i++)
+            {
+                lstChars.Add(this.grid[i, pColIndex].Value);
+            }
+            pColWord = new string(lstChars.ToArray());
+
+            //Go to top 
+            int c = pColIndex;
+            while ((c >= 0) && (this.grid[pRowIndex, c].Value != Letter.NoLetter))
+            {
+                c--;
+            }
+            c++;
+            lstChars = new List<char>();
+
+            for (int i = c; ((i < (gridDimension - 1)) && (this.grid[pRowIndex, c].Value != Letter.NoLetter)); i++)
+            {
+                lstChars.Add(this.grid[pRowIndex, i].Value);
+            }
+            pRowWord = new string(lstChars.ToArray());
+
+            return true;
         }
     }
 }

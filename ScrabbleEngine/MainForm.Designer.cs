@@ -44,6 +44,9 @@
             ProgressBar = new ProgressBar();
             gridTableLayout = new TableLayoutPanel();
             SortComboBox = new ComboBox();
+            ListWordsBtn = new Button();
+            ValidateWordsBtn = new Button();
+            RefreshValidBtn = new Button();
             SuspendLayout();
             // 
             // LettersLabel
@@ -220,11 +223,44 @@
             SortComboBox.TabIndex = 15;
             SortComboBox.SelectedIndexChanged += SortComboBox_SelectedIndexChanged;
             // 
+            // ListWordsBtn
+            // 
+            ListWordsBtn.Location = new Point(446, 23);
+            ListWordsBtn.Name = "ListWordsBtn";
+            ListWordsBtn.Size = new Size(86, 23);
+            ListWordsBtn.TabIndex = 16;
+            ListWordsBtn.Text = "List Words";
+            ListWordsBtn.UseVisualStyleBackColor = true;
+            ListWordsBtn.Click += ListWordsBtn_Click;
+            // 
+            // ValidateWordsBtn
+            // 
+            ValidateWordsBtn.Location = new Point(658, 22);
+            ValidateWordsBtn.Name = "ValidateWordsBtn";
+            ValidateWordsBtn.Size = new Size(101, 23);
+            ValidateWordsBtn.TabIndex = 17;
+            ValidateWordsBtn.Text = "Validate Words";
+            ValidateWordsBtn.UseVisualStyleBackColor = true;
+            ValidateWordsBtn.Click += ValidateWordsBtn_Click;
+            // 
+            // RefreshValidBtn
+            // 
+            RefreshValidBtn.Location = new Point(538, 22);
+            RefreshValidBtn.Name = "RefreshValidBtn";
+            RefreshValidBtn.Size = new Size(114, 23);
+            RefreshValidBtn.TabIndex = 18;
+            RefreshValidBtn.Text = "Refresh Valid";
+            RefreshValidBtn.UseVisualStyleBackColor = true;
+            RefreshValidBtn.Click += RefreshValidBtn_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(772, 392);
+            Controls.Add(RefreshValidBtn);
+            Controls.Add(ValidateWordsBtn);
+            Controls.Add(ListWordsBtn);
             Controls.Add(SortComboBox);
             Controls.Add(gridTableLayout);
             Controls.Add(ProgressBar);
@@ -266,5 +302,8 @@
         private ProgressBar ProgressBar;
         private TableLayoutPanel gridTableLayout;
         private ComboBox SortComboBox;
+        private Button ListWordsBtn;
+        private Button ValidateWordsBtn;
+        private Button RefreshValidBtn;
     }
 }
