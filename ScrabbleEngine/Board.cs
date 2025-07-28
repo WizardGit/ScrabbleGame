@@ -316,5 +316,14 @@ namespace ScrabbleEngine
 
             return true;
         }
+
+        public Word GetNewWord()
+        {
+            
+            
+            Word wordRes = new Word("result");
+
+            return wordRes;
+        }
     }
 }

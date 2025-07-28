@@ -47,6 +47,9 @@
             ListWordsBtn = new Button();
             ValidateWordsBtn = new Button();
             RefreshValidBtn = new Button();
+            CalcNewWordBtn = new Button();
+            PointsScoredLbl = new Label();
+            DisplayPointsLabel = new Label();
             SuspendLayout();
             // 
             // LettersLabel
@@ -253,11 +256,42 @@
             RefreshValidBtn.UseVisualStyleBackColor = true;
             RefreshValidBtn.Click += RefreshValidBtn_Click;
             // 
+            // CalcNewWordBtn
+            // 
+            CalcNewWordBtn.Location = new Point(446, 388);
+            CalcNewWordBtn.Name = "CalcNewWordBtn";
+            CalcNewWordBtn.Size = new Size(314, 49);
+            CalcNewWordBtn.TabIndex = 19;
+            CalcNewWordBtn.Text = "Calculate New Word";
+            CalcNewWordBtn.UseVisualStyleBackColor = true;
+            CalcNewWordBtn.Click += CalcNewWordBtn_Click;
+            // 
+            // PointsScoredLbl
+            // 
+            PointsScoredLbl.AutoSize = true;
+            PointsScoredLbl.Location = new Point(219, 405);
+            PointsScoredLbl.Name = "PointsScoredLbl";
+            PointsScoredLbl.Size = new Size(79, 15);
+            PointsScoredLbl.TabIndex = 20;
+            PointsScoredLbl.Text = "Points Scored";
+            // 
+            // DisplayPointsLabel
+            // 
+            DisplayPointsLabel.AutoSize = true;
+            DisplayPointsLabel.Location = new Point(319, 405);
+            DisplayPointsLabel.Name = "DisplayPointsLabel";
+            DisplayPointsLabel.Size = new Size(62, 15);
+            DisplayPointsLabel.TabIndex = 21;
+            DisplayPointsLabel.Text = "No Points!";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(772, 392);
+            ClientSize = new Size(772, 449);
+            Controls.Add(DisplayPointsLabel);
+            Controls.Add(PointsScoredLbl);
+            Controls.Add(CalcNewWordBtn);
             Controls.Add(RefreshValidBtn);
             Controls.Add(ValidateWordsBtn);
             Controls.Add(ListWordsBtn);
@@ -305,5 +339,8 @@
         private Button ListWordsBtn;
         private Button ValidateWordsBtn;
         private Button RefreshValidBtn;
+        private Button CalcNewWordBtn;
+        private Label PointsScoredLbl;
+        private Label DisplayPointsLabel;
     }
 }

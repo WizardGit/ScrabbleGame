@@ -90,13 +90,43 @@ namespace ScrabbleEngine
             }
             return false;
         }
-        public bool RemoveLetter(char pLetter)
+        public bool RemoveLetter(char pLetter = '-')
         {
-            return validValues.Remove(validValues.Find(p => p.Value == pLetter));
+            Letter? match = validValues.Find(p => p.Value == pLetter);
+            if(match == null) 
+                return false;
+            else
+                return validValues.Remove(match);
         }
         public bool RemoveLetter(Letter pLetter)
         {
-            return validValues.Remove(validValues.Find(p => p.Value == pLetter.Value));
-        }        
+            Letter? match = validValues.Find(p => p.Value == pLetter.Value);
+            if (match == null)
+                return false;
+            else
+                return validValues.Remove(match);
+        }      
+        
+        public int CalculatePoints(ref int multiplicationFactor)
+        {
+            int score = this.validValues[0].Points;
+            switch(this.bonusType)
+            {
+                case BonusType.doubleLetter:
+                    score *= 2;
+                    break;
+                case BonusType.tripleLetter:
+                    score *= 3;
+                    break;
+                case BonusType.doubleWord:
+                    multiplicationFactor *= 2;
+                    break;
+                case BonusType.tripleWord:
+                    multiplicationFactor *= 3;
+                    break;
+            }
+
+            return score;
+        }
     }
 }

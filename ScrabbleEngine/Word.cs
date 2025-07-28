@@ -8,8 +8,8 @@ namespace ScrabbleEngine
         private int points;
         private int rowIndex;
         private int columnIndex;
-        private bool isRow;
-        private bool isColumn;
+        public bool isRow;
+        public bool isColumn;
         public string Value
         {
             get { return value; }
