@@ -317,13 +317,107 @@ namespace ScrabbleEngine
             return true;
         }
 
-        public Word GetNewWord()
+        public Word GetNewWord(char[,] pCharBoard)
         {
-            
-            
-            Word wordRes = new Word("result");
+            List<char> listChars = new List<char>();
 
-            return wordRes;
+            int origRow = -1;
+            int origCol = -1;
+            int lastcol = -1;
+            int lastrow = -1;
+            bool isRow = false;
+            bool isCol = false;
+
+            for (int r = 0; r < gridDimension; r++)
+            {
+                for (int c = 0; c < gridDimension; c++)
+                {
+                    if (grid[r, c].Value != pCharBoard[r,c])
+                    {
+                        if ((lastcol == -1) && (lastrow == -1))
+                        {
+                            listChars.Add(pCharBoard[r, c]);
+                            lastcol = c;
+                            lastrow = r;
+                            origRow = r;
+                            origCol = c;
+                        }
+                        else
+                        {
+                            if(lastcol + 1 == c)
+                            {
+                                if (isRow == true)
+                                    return new Word("");
+                                else if (isCol == false)
+                                    isCol = true;
+                                lastcol = c;
+                                listChars.Add(pCharBoard[r, c]);
+                            }
+                            else if (lastrow + 1 == r)
+                            {
+                                if (isCol == true)
+                                    return new Word("");
+                                else if (isRow == false)
+                                    isRow = true;
+                                lastrow = r;
+                                listChars.Add(pCharBoard[r, c]);
+                            }
+                            else
+                            {
+                                return new Word("");
+                            }
+                        }                        
+                    }
+                }
+            }
+
+            Word theWord = new Word(new string(listChars.ToArray()));
+            theWord.isRow = isRow;
+            theWord.isColumn = isCol;
+            theWord.ColumnIndex = origCol;
+            theWord.RowIndex = origRow;
+
+            return theWord;
+        }
+
+        /// <summary>
+        /// Places values in the board onto the tablelayoutpanel
+        /// </summary>
+        public void SyncBoardToTableLayoutPanel(ref TableLayoutPanel tLB)
+        {
+            for (int row = 0; row < gridDimension; row++)
+            {
+                for (int col = 0; col < gridDimension; col++)
+                {
+                    TextBox? tb = tLB.GetControlFromPosition(col, row) as TextBox;
+                    if (tb != null)
+                    {
+                        if (grid[row, col].Value == Letter.NoLetter)
+                            tb.Text = "";
+                        else
+                            tb.Text = grid[row, col].Value.ToString();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Places values on the tablelayoutpanel into the board
+        /// </summary>
+        /// <param name="tLB"></param>
+        public void SyncTableLayoutPanelToBoard(TableLayoutPanel tLB)
+        {
+            for (int row = 0; row < gridDimension; row++)
+            {
+                for (int col = 0; col < gridDimension; col++)
+                {
+                    TextBox? tb = tLB.GetControlFromPosition(col, row) as TextBox;
+                    if ((tb != null) && (tb.Text.Length == 1) && (char.IsLetter(tb.Text[0]) == true))
+                    {
+                        grid[row, col].Value = tb.Text[0];
+                    }
+                }
+            }
         }
     }
 }

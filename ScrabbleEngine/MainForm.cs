@@ -4,7 +4,7 @@
  * Add ability to place a word on the board
  */
 
-using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace ScrabbleEngine
 {
@@ -16,7 +16,32 @@ namespace ScrabbleEngine
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            // Testing speeds of DAWG vs dictionary - can really vary but seems like over lots of word checks dawg is better
+            //Console.WriteLine("starting");
 
+            //bool exists;
+            //Stopwatch stopwatch;
+
+            //Dictionary ddict = new Dictionary();
+            //stopwatch = Stopwatch.StartNew(); // Start timing
+            //exists = ddict.CheckWord("amazing");
+            //exists = ddict.CheckWord("night");
+            //exists = ddict.CheckWord("zebra");
+            //System.Threading.Thread.Sleep(300);
+            //stopwatch.Stop(); // Stop timing
+            //Debug.WriteLine($"Word exists: {exists}");
+            //Debug.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
+
+            //var dawg = new DAWG();
+            //dawg.BuildFromFile();
+            //stopwatch = Stopwatch.StartNew(); // Start timing
+            //exists = dawg.Search("amazing");
+            //exists = dawg.Search("night");
+            //exists = dawg.Search("zebra");
+            //System.Threading.Thread.Sleep(300);
+            //stopwatch.Stop(); // Stop timing
+            //Debug.WriteLine($"Word exists: {exists}");
+            //Debug.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
         }
         public MainForm()
         {
@@ -53,6 +78,10 @@ namespace ScrabbleEngine
                     MessageBox.Show("You can only have one letter in each square!", "Invalid Letter", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     changedBox.Text = "";
                 }
+                else if (changedBox.Text.Length == 0)
+                {
+                    return;
+                }
                 else if (dataBoard[pos.Row, pos.Column].IsValid(changedBox.Text[0]) == false)
                 {
                     MessageBox.Show("Not a valid letter to put here!", "Invalid Letter", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -60,6 +89,29 @@ namespace ScrabbleEngine
                 }
                 Console.WriteLine($"Text changed at Row: {pos.Row}, Column: {pos.Column}");
             }
+        }
+
+        public char[,] GetTableLayoutPanelBoard()
+        {
+            char[,] board = new char[15, 15];
+
+            for (int row = 0; row < 15; row++)
+            {
+                for (int col = 0; col < 15; col++)
+                {
+                    TextBox? tb = gridTableLayout.GetControlFromPosition(col, row) as TextBox;
+                    if (tb != null)
+                    {
+                        if (tb.Text.Length == 0)
+                            board[row, col] = Letter.NoLetter;
+                        else
+                            board[row, col] = tb.Text[0];                        
+                    }
+                    else
+                        throw new Exception("One of the form tablelayout textboxes is null...");                        
+                }
+            }
+            return board;
         }
 
         private void CreateBoard()
@@ -234,14 +286,35 @@ namespace ScrabbleEngine
 
         private void CalcNewWordBtn_Click(object sender, EventArgs e)
         {
-            //Find new word - TODO
-            Word newWord = dataBoard.GetNewWord();
+            int multiplicationFactor = 1;
+
+            TextBox? tb = gridTableLayout.GetControlFromPosition(7,7) as TextBox;
+            if ((tb == null) || (tb.Text.Length != 1) || (char.IsLetter(tb.Text[0]) == false))
+            {
+                MessageBox.Show("There is no word on the middle space!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else if (dataBoard.IsEmpty() == true)
+            {
+                // First scrabble word gets automatic double word score
+                // It's impossible to hit any other word bonuses on the first word play
+                multiplicationFactor *= 2;                
+            }
+
+            Word newWord = dataBoard.GetNewWord(GetTableLayoutPanelBoard());
+
+            if (newWord.Value == "")
+            {
+                MessageBox.Show("New Word is not valid!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             int finalScore = 0;
             //Validate that it is valid
             Dictionary dict = new Dictionary();
             if (dict.CheckWord(newWord.Value) == false)
             {
-                //Require change
+                MessageBox.Show("New Word is not valid!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             //Calculate its points
@@ -249,30 +322,35 @@ namespace ScrabbleEngine
             int rowIndex = newWord.RowIndex;
             bool isColumn = newWord.isColumn;
             bool isRow = newWord.isRow;
-            int multiplicationFactor = 1;
+            
 
             if (isColumn == true)
             {
                 for (int i = 0; i < newWord.Value.Length; i++)
                 {
-                    finalScore += dataBoard[rowIndex+i, colIndex].CalculatePoints(ref multiplicationFactor);
+                    finalScore += dataBoard[rowIndex + i, colIndex].CalculatePoints(ref multiplicationFactor);
                 }
             }
             else if (isRow == true)
             {
                 for (int i = 0; i < newWord.Value.Length; i++)
                 {
-                    finalScore += dataBoard[rowIndex, colIndex+i].CalculatePoints(ref multiplicationFactor);
+                    finalScore += dataBoard[rowIndex, colIndex + i].CalculatePoints(ref multiplicationFactor);
                 }
             }
             else
             {
                 throw new Exception("word isn't row or column!");
             }
-                
 
+            dataBoard.SyncTableLayoutPanelToBoard(gridTableLayout);
             //Set the output fields
-            DisplayPointsLabel.Text = newWord.ToString() + " scored " + (finalScore * multiplicationFactor).ToString() + " points!";
+            DisplayPointsLabel.Text = newWord.Value.ToString() + " scored " + (finalScore * multiplicationFactor).ToString() + " points!";
+        }
+
+        private void RefreshBoardBtn_Click(object sender, EventArgs e)
+        {
+            dataBoard.SyncBoardToTableLayoutPanel(ref gridTableLayout);
         }
     }
 }

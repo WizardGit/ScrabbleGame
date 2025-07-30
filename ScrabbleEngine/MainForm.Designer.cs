@@ -50,6 +50,7 @@
             CalcNewWordBtn = new Button();
             PointsScoredLbl = new Label();
             DisplayPointsLabel = new Label();
+            RefreshBoardBtn = new Button();
             SuspendLayout();
             // 
             // LettersLabel
@@ -260,7 +261,7 @@
             // 
             CalcNewWordBtn.Location = new Point(446, 388);
             CalcNewWordBtn.Name = "CalcNewWordBtn";
-            CalcNewWordBtn.Size = new Size(314, 49);
+            CalcNewWordBtn.Size = new Size(166, 49);
             CalcNewWordBtn.TabIndex = 19;
             CalcNewWordBtn.Text = "Calculate New Word";
             CalcNewWordBtn.UseVisualStyleBackColor = true;
@@ -284,11 +285,22 @@
             DisplayPointsLabel.TabIndex = 21;
             DisplayPointsLabel.Text = "No Points!";
             // 
+            // RefreshBoardBtn
+            // 
+            RefreshBoardBtn.Location = new Point(633, 388);
+            RefreshBoardBtn.Name = "RefreshBoardBtn";
+            RefreshBoardBtn.Size = new Size(127, 49);
+            RefreshBoardBtn.TabIndex = 22;
+            RefreshBoardBtn.Text = "Refresh Board";
+            RefreshBoardBtn.UseVisualStyleBackColor = true;
+            RefreshBoardBtn.Click += RefreshBoardBtn_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(772, 449);
+            Controls.Add(RefreshBoardBtn);
             Controls.Add(DisplayPointsLabel);
             Controls.Add(PointsScoredLbl);
             Controls.Add(CalcNewWordBtn);
@@ -342,5 +354,6 @@
         private Button CalcNewWordBtn;
         private Label PointsScoredLbl;
         private Label DisplayPointsLabel;
+        private Button RefreshBoardBtn;
     }
 }
