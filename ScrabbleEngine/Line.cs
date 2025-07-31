@@ -35,6 +35,16 @@ namespace ScrabbleEngine
             validSquares.Add(pSquare);
         }
 
+        public bool IsEmpty()
+        {
+            foreach( Square square in validSquares)
+            {
+                if (square.Value != Letter.NoLetter)
+                    return false;
+            }  
+            return true;
+        }
+
         public void LineCheck(string pstrLetters, out List<Word> pLstStrWords, ProgressBar pB)
         {
             int intProgressValue = 0;
@@ -50,8 +60,8 @@ namespace ScrabbleEngine
 
             for (int i = 0; i < this.Length; i++)
             {
-                Word debugWord = new Word("Words start at Index " + i.ToString());
-                debugWord.AddToList(ref pLstStrWords);
+                //Word debugWord = new Word("Words start at Index " + i.ToString());
+                //debugWord.AddToList(ref pLstStrWords);
 
                 for (int j = 0; j < dictWords.Length; j++)
                 {

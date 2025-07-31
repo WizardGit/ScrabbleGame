@@ -97,11 +97,18 @@ namespace ScrabbleEngine
             get { return this.letterList[index].Value; }
             set { this.letterList[index].Value = value; }
         }
-        public void AddToList(ref List<Word> pLstStrWords)
+        public void AddToList(ref List<Word> pLstStrWords, bool pCheckIndex = false)
         {
             foreach (Word word in pLstStrWords)
             {
-                if (this.Value == word.Value)
+                if (pCheckIndex == true)
+                {
+                    if ((this.rowIndex == word.rowIndex) && (this.columnIndex == word.columnIndex))
+                    {
+                        return;
+                    }
+                }
+                else if (this.Value == word.Value)
                 {
                     return;
                 }
@@ -178,6 +185,16 @@ namespace ScrabbleEngine
                 return blnHitMask;
         }
 
+        public bool OneLetterUsed(string pstrLetters)
+        {
+            for (int i = 0; i < pstrLetters.Length; i++)
+            {
+                if (pstrLetters[i] == Letter.NoLetter)
+                    return true;
+            }
+            return false;
+        }
+
         public bool WordMatchMask(int pintStartIndex, Line pLine, string pstrLetters, bool pblnMustHitMask = true, bool pblnMustMatchLength = false)
         {
             if ((pblnMustMatchLength == true) && (this.Length != pLine.Length))
@@ -219,7 +236,13 @@ namespace ScrabbleEngine
             if ((c != pLine.Length) && (pLine[c] != Letter.NoLetter))
                 return false;
             else
-                return blnHitMask;
+            {
+                if (OneLetterUsed(pstrLetters) == true)
+                {
+                    return blnHitMask;
+                }
+                return false;
+            }                
         }
     }
 }

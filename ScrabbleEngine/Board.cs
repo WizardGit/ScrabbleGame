@@ -82,14 +82,14 @@ namespace ScrabbleEngine
             for (int r = 0; r < gridDimension; r++)
             {
                 RowCheck(pstrLetters, out List<Word> pWordList, pb, r);
-                possibleWordList.AddRange(possibleWordList);
+                possibleWordList.AddRange(pWordList);
             }
 
 
             for (int c = 0; c < gridDimension; c++)
             {
                 ColumnCheck(pstrLetters, out List<Word> pWordList, pb, c);
-                possibleWordList.AddRange(possibleWordList);
+                possibleWordList.AddRange(pWordList);
             }
             return possibleWordList;
         }
@@ -112,7 +112,7 @@ namespace ScrabbleEngine
             grid[pColumn, pRow].Bonus = pBonus;
             grid[indexGridDimension - pColumn, pRow].Bonus = pBonus;
             grid[pRow, indexGridDimension - pColumn].Bonus = pBonus;
-        }
+        }        
 
         private void RowCheck(string pstrLetters, out List<Word> pWordList, ProgressBar pb, int pRow)
         {
@@ -122,7 +122,13 @@ namespace ScrabbleEngine
             {
                 line.AddSquare(grid[pRow, c]);
             }
-            line.LineCheck(pstrLetters, out pWordList, pb);
+            if (line.IsEmpty() == false)
+                line.LineCheck(pstrLetters, out pWordList, pb);
+            else
+            {
+                pWordList = new List<Word>();
+                return;
+            }                
 
             //All words in "line" are words for a row so set that
             foreach (Word word in pWordList)
@@ -141,7 +147,14 @@ namespace ScrabbleEngine
             {
                 line.AddSquare(grid[r, pColumn]);
             }
-            line.LineCheck(pstrLetters, out pWordList, pb);
+            
+            if (line.IsEmpty() == false)
+                line.LineCheck(pstrLetters, out pWordList, pb);
+            else
+            {
+                pWordList = new List<Word>();
+                return;
+            }
 
             //All words in "line" are words for a column so set that
             foreach (Word word in pWordList)
@@ -254,18 +267,16 @@ namespace ScrabbleEngine
             {
                 for (int c = 0; c < gridDimension; c++)
                 {
-                    if (grid[r, c].Value != Letter.NoLetter)
+                    if (GetWord(r, c, out Word pColWord, out Word pRowWord) == true)
                     {
-                        GetWord(r, c, out string pColWord, out string pRowWord);
-
-                        if (dict.CheckWord(pColWord) == false)
+                        if ((pColWord.Value != "") && (dict.CheckWord(pColWord.Value) == false))
                         {
-                            pWrongWord = pColWord;
+                            pWrongWord = pColWord.Value;
                             return false;
                         }
-                        else if (dict.CheckWord(pRowWord) == false)
+                        else if ((pRowWord.Value != "") && (dict.CheckWord(pRowWord.Value) == false))
                         {
-                            pWrongWord = pRowWord;
+                            pWrongWord = pRowWord.Value;
                             return false;
                         }
                     }
@@ -275,14 +286,17 @@ namespace ScrabbleEngine
             return true;
         }        
 
-        public bool GetWord(int pRowIndex, int pColIndex, out string pColWord, out string pRowWord)
+        public bool GetWord(int pRowIndex, int pColIndex, out Word pColWord, out Word pRowWord)
         {
             if (grid[pRowIndex, pColIndex].Value == Letter.NoLetter)
             {
-                pColWord = "";
-                pRowWord = "";
+                pColWord = new Word("");
+                pRowWord = new Word("");
                 return false;
             }
+
+            int origRow = -1;
+            int origCol = -1;
 
             //Go to top 
             int r = pRowIndex;
@@ -291,13 +305,23 @@ namespace ScrabbleEngine
                 r--;
             }
             r++;
+            origRow = r;
+            origCol = pColIndex;
             List<char> lstChars = new List<char>();
 
-            for (int i = r; ((i < (gridDimension - 1)) && (this.grid[r, pColIndex].Value != Letter.NoLetter)) ; i++)
+            for (int i = r; ((i < (gridDimension - 1)) && (this.grid[i, pColIndex].Value != Letter.NoLetter)) ; i++)
             {
                 lstChars.Add(this.grid[i, pColIndex].Value);
             }
-            pColWord = new string(lstChars.ToArray());
+            if (lstChars.Count > 1)
+            {
+                pColWord = new Word(new string(lstChars.ToArray()));
+                pColWord.SetAsColumn();
+                pColWord.RowIndex = origRow;
+                pColWord.ColumnIndex = origCol;                
+            }                
+            else
+                pColWord = new Word("");
 
             //Go to top 
             int c = pColIndex;
@@ -306,27 +330,95 @@ namespace ScrabbleEngine
                 c--;
             }
             c++;
+            origRow = pRowIndex;
+            origCol = c;
             lstChars = new List<char>();
 
-            for (int i = c; ((i < (gridDimension - 1)) && (this.grid[pRowIndex, c].Value != Letter.NoLetter)); i++)
+            for (int i = c; ((i < (gridDimension - 1)) && (this.grid[pRowIndex, i].Value != Letter.NoLetter)); i++)
             {
                 lstChars.Add(this.grid[pRowIndex, i].Value);
             }
-            pRowWord = new string(lstChars.ToArray());
+            if (lstChars.Count > 1)
+            {
+                pRowWord = new Word(new string(lstChars.ToArray()));
+                pRowWord.SetAsRow();
+                pRowWord.RowIndex = origRow;
+                pRowWord.ColumnIndex = origCol;
+            }
+            else
+                pRowWord = new Word("");
 
             return true;
         }
 
-        public Word GetNewWord(char[,] pCharBoard)
+        public bool GetWord(char[,] charBoard, int pRowIndex, int pColIndex, out Word pColWord, out Word pRowWord)
         {
-            List<char> listChars = new List<char>();
+            if (charBoard[pRowIndex, pColIndex] == Letter.NoLetter)
+            {
+                pColWord = new Word("");
+                pRowWord = new Word("");
+                return false;
+            }
 
             int origRow = -1;
             int origCol = -1;
-            int lastcol = -1;
-            int lastrow = -1;
-            bool isRow = false;
-            bool isCol = false;
+
+            //Go to top 
+            int r = pRowIndex;
+            while ((r >= 0) && (charBoard[r, pColIndex] != Letter.NoLetter))
+            {
+                r--;
+            }
+            r++;
+            origRow = r;
+            origCol = pColIndex;
+            List<char> lstChars = new List<char>();
+
+            for (int i = r; ((i < (gridDimension - 1)) && (charBoard[i, pColIndex] != Letter.NoLetter)); i++)
+            {
+                lstChars.Add(charBoard[i, pColIndex]);
+            }
+            if (lstChars.Count > 1)
+            {
+                pColWord = new Word(new string(lstChars.ToArray()));
+                pColWord.SetAsColumn();
+                pColWord.RowIndex = origRow;
+                pColWord.ColumnIndex = origCol;
+            }
+            else
+                pColWord = new Word("");
+
+            //Go to top 
+            int c = pColIndex;
+            while ((c >= 0) && (charBoard[pRowIndex, c] != Letter.NoLetter))
+            {
+                c--;
+            }
+            c++;
+            origRow = pRowIndex;
+            origCol = c;
+            lstChars = new List<char>();
+
+            for (int i = c; ((i < (gridDimension - 1)) && (charBoard[pRowIndex, i] != Letter.NoLetter)); i++)
+            {
+                lstChars.Add(charBoard[pRowIndex, i]);
+            }
+            if (lstChars.Count > 1)
+            {
+                pRowWord = new Word(new string(lstChars.ToArray()));
+                pRowWord.SetAsRow();
+                pRowWord.RowIndex = origRow;
+                pRowWord.ColumnIndex = origCol;
+            }
+            else
+                pRowWord = new Word("");
+
+            return true;
+        }
+
+        public List<Word> GetNewWord(char[,] pCharBoard)
+        {
+            List<Word> lstWords = new List<Word>();
 
             for (int r = 0; r < gridDimension; r++)
             {
@@ -334,50 +426,16 @@ namespace ScrabbleEngine
                 {
                     if (grid[r, c].Value != pCharBoard[r,c])
                     {
-                        if ((lastcol == -1) && (lastrow == -1))
-                        {
-                            listChars.Add(pCharBoard[r, c]);
-                            lastcol = c;
-                            lastrow = r;
-                            origRow = r;
-                            origCol = c;
-                        }
-                        else
-                        {
-                            if(lastcol + 1 == c)
-                            {
-                                if (isRow == true)
-                                    return new Word("");
-                                else if (isCol == false)
-                                    isCol = true;
-                                lastcol = c;
-                                listChars.Add(pCharBoard[r, c]);
-                            }
-                            else if (lastrow + 1 == r)
-                            {
-                                if (isCol == true)
-                                    return new Word("");
-                                else if (isRow == false)
-                                    isRow = true;
-                                lastrow = r;
-                                listChars.Add(pCharBoard[r, c]);
-                            }
-                            else
-                            {
-                                return new Word("");
-                            }
-                        }                        
+                        GetWord(pCharBoard, r, c, out Word pColWord, out Word pRowWord);
+                        if (pColWord.Value != "")
+                            pColWord.AddToList(ref lstWords, true);
+                        if (pRowWord.Value != "")
+                            pRowWord.AddToList(ref lstWords, true);
                     }
                 }
             }
 
-            Word theWord = new Word(new string(listChars.ToArray()));
-            theWord.isRow = isRow;
-            theWord.isColumn = isCol;
-            theWord.ColumnIndex = origCol;
-            theWord.RowIndex = origRow;
-
-            return theWord;
+            return lstWords;
         }
 
         /// <summary>

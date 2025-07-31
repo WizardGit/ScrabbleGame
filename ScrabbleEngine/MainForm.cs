@@ -1,9 +1,4 @@
 
-/*
- * TODO:
- * Add ability to place a word on the board
- */
-
 using System.Diagnostics;
 
 namespace ScrabbleEngine
@@ -301,51 +296,54 @@ namespace ScrabbleEngine
                 multiplicationFactor *= 2;                
             }
 
-            Word newWord = dataBoard.GetNewWord(GetTableLayoutPanelBoard());
+            List<Word> newWords = dataBoard.GetNewWord(GetTableLayoutPanelBoard());
 
-            if (newWord.Value == "")
+            foreach (Word newWord in newWords)
             {
-                MessageBox.Show("New Word is not valid!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            int finalScore = 0;
-            //Validate that it is valid
-            Dictionary dict = new Dictionary();
-            if (dict.CheckWord(newWord.Value) == false)
-            {
-                MessageBox.Show("New Word is not valid!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            //Calculate its points
-            int colIndex = newWord.ColumnIndex;
-            int rowIndex = newWord.RowIndex;
-            bool isColumn = newWord.isColumn;
-            bool isRow = newWord.isRow;
-            
-
-            if (isColumn == true)
-            {
-                for (int i = 0; i < newWord.Value.Length; i++)
+                if (newWord.Value == "")
                 {
-                    finalScore += dataBoard[rowIndex + i, colIndex].CalculatePoints(ref multiplicationFactor);
+                    MessageBox.Show("New Word is not valid!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
                 }
-            }
-            else if (isRow == true)
-            {
-                for (int i = 0; i < newWord.Value.Length; i++)
+
+                int finalScore = 0;
+                //Validate that it is valid
+                Dictionary dict = new Dictionary();
+                if (dict.CheckWord(newWord.Value) == false)
                 {
-                    finalScore += dataBoard[rowIndex, colIndex + i].CalculatePoints(ref multiplicationFactor);
+                    MessageBox.Show("New Word is not valid!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
                 }
-            }
-            else
-            {
-                throw new Exception("word isn't row or column!");
-            }
+                //Calculate its points
+                int colIndex = newWord.ColumnIndex;
+                int rowIndex = newWord.RowIndex;
+                bool isColumn = newWord.isColumn;
+                bool isRow = newWord.isRow;
+
+
+                if (isColumn == true)
+                {
+                    for (int i = 0; i < newWord.Value.Length; i++)
+                    {
+                        finalScore += dataBoard[rowIndex + i, colIndex].CalculatePoints(ref multiplicationFactor);
+                    }
+                }
+                else if (isRow == true)
+                {
+                    for (int i = 0; i < newWord.Value.Length; i++)
+                    {
+                        finalScore += dataBoard[rowIndex, colIndex + i].CalculatePoints(ref multiplicationFactor);
+                    }
+                }
+                else
+                {
+                    throw new Exception("word isn't row or column!");
+                }
+                //Set the output fields
+                DisplayPointsLabel.Text = newWord.Value.ToString() + " scored " + (finalScore * multiplicationFactor).ToString() + " points!";
+            }            
 
             dataBoard.SyncTableLayoutPanelToBoard(gridTableLayout);
-            //Set the output fields
-            DisplayPointsLabel.Text = newWord.Value.ToString() + " scored " + (finalScore * multiplicationFactor).ToString() + " points!";
         }
 
         private void RefreshBoardBtn_Click(object sender, EventArgs e)
