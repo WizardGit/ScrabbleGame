@@ -258,7 +258,7 @@ namespace ScrabbleEngine
 
             foreach (Word word in lstStrWords)
             {
-                DisplayListBox.Items.Add(word.PrintWordPoints());
+                DisplayListBox.Items.Add(word.PrintWordIndexPoints());
             }
         }
 

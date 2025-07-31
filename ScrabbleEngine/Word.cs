@@ -91,6 +91,11 @@ namespace ScrabbleEngine
         {
             return this.value + " [" + this.rowIndex + ", " + this.columnIndex + "]";
         }
+        
+        public string PrintWordIndexPoints()
+        {
+            return this.value + " [" + this.rowIndex + ", " + this.columnIndex + "]" + " (" + this.points + ")";
+        }
 
         public char this[int index]
         {

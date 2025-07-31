@@ -10,14 +10,13 @@ namespace ScrabbleEngine
             get { return validSquares.Count; }
         }
 
-        public Line(string pstrMask = "---------------")
+        public Line(string pstrMask = "")
         {
             validSquares = new List<Square>();
             foreach (char c in pstrMask)
             {
                 validSquares.Add(new Square(Square.BonusType.nothing, c));
-            }           
-           
+            } 
         }
 
         public char this[int index]

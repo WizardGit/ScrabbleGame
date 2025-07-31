@@ -245,8 +245,9 @@ namespace ScrabbleEngine
 
             //Check Column
             for(int i = 0; i < valchars.Count; i++)
-            {                
-                if (dict.CheckWord(pColAbove + square.ValidValues[i].Value + pColBelow) == false)
+            {
+                string catWord = pColAbove + square.ValidValues[i].Value + pColBelow;
+                if ((catWord.Length > 2) && (dict.CheckWord(catWord) == false))
                 {
                     square.RemoveLetter(valchars[i]);
                 }
@@ -255,7 +256,8 @@ namespace ScrabbleEngine
             // Check Row
             for (int i = 0; i < valchars.Count; i++)
             {
-                if (dict.CheckWord(pRowLeft + square.ValidValues[i].Value + pRowRight) == false)
+                string catWord = pRowLeft + square.ValidValues[i].Value + pRowRight;
+                if ((catWord.Length > 2) && (dict.CheckWord(catWord) == false))
                 {
                     square.RemoveLetter(valchars[i]);
                 }
