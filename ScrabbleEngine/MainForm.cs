@@ -1,6 +1,20 @@
 
 using System.Diagnostics;
 
+/*
+ * TODO:
+ * even if we don't touch a letter already there but we make a word of a letter there, that counts
+
+what exactly is refresh checking?
+add istouching variable to square
+
+does findnewword find wordsand multiple others words created?
+ * 
+ * 
+ * 
+ * 
+ */
+
 namespace ScrabbleEngine
 {
     public partial class MainForm : Form
@@ -164,7 +178,7 @@ namespace ScrabbleEngine
 
             foreach (Word word in pLstStrWords)
             {
-                DisplayListBox.Items.Add(word.PrintWordPoints());
+                DisplayListBox.Items.Add(word.PrintWordIndexPoints());
             }
         }
 
@@ -200,7 +214,7 @@ namespace ScrabbleEngine
             //lstWords.Sort((a, b) => b.Points.CompareTo(a.Points));
             foreach (Word word in lstWords)
             {
-                DisplayListBox.Items.Add(word.PrintWordPoints());
+                DisplayListBox.Items.Add(word.PrintWordIndexPoints());
             }
         }
 
@@ -217,7 +231,7 @@ namespace ScrabbleEngine
 
             foreach (Word word in lstWords)
             {
-                DisplayListBox.Items.Add(word.PrintWordPoints());
+                DisplayListBox.Items.Add(word.PrintWordIndexPoints());
             }
         }
 
@@ -254,6 +268,7 @@ namespace ScrabbleEngine
         {
             string strLetters = LettersTextbox.Text.ToLower().Trim();
             List<Word> lstStrWords = dataBoard.BoardCheck(strLetters, ProgressBar);
+            lstWords = lstStrWords;
             DisplayListBox.Items.Clear();
 
             foreach (Word word in lstStrWords)

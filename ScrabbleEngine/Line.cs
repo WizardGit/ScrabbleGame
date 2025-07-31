@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Concurrent;
+
 namespace ScrabbleEngine
 {
     public class Line
@@ -52,30 +54,42 @@ namespace ScrabbleEngine
             if (pB != null)
             {
                 pB.Value = 0;
-                pB.Maximum = dictWords.Length * this.Length;
+                pB.Maximum = this.Length-1;
             }
 
             pLstStrWords = new List<Word>();
 
             for (int i = 0; i < this.Length; i++)
             {
-                //Word debugWord = new Word("Words start at Index " + i.ToString());
-                //debugWord.AddToList(ref pLstStrWords);
+                ConcurrentBag<Word> bag = new ConcurrentBag<Word>();
 
-                for (int j = 0; j < dictWords.Length; j++)
+                Parallel.For(0, dictWords.Length, j =>
                 {
                     Word scrabbleWord = dictWords.GetWord(j);
                     if (scrabbleWord.WordMatchMask(i, this, pstrLetters, true, false) == true)
                     {
                         scrabbleWord.ColumnIndex = i;
-                        scrabbleWord.AddToList(ref pLstStrWords);
-                    }
-
-                    if (pB != null)
-                    {
-                        pB.Value = intProgressValue++;
+                        bag.Add(scrabbleWord);
                     }                    
-                }
+                });
+                pLstStrWords.AddRange(bag.ToList());
+                if (pB != null)
+                    pB.Value = intProgressValue++;
+
+                //for (int j = 0; j < dictWords.Length; j++)
+                //{
+                //    Word scrabbleWord = dictWords.GetWord(j);
+                //    if (scrabbleWord.WordMatchMask(i, this, pstrLetters, true, false) == true)
+                //    {
+                //        scrabbleWord.ColumnIndex = i;
+                //        scrabbleWord.AddToList(ref pLstStrWords);
+                //    }
+
+                //    if (pB != null)
+                //    {
+                //        pB.Value = intProgressValue++;
+                //    }                    
+                //}
             }
         }
 

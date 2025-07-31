@@ -94,7 +94,12 @@ namespace ScrabbleEngine
         
         public string PrintWordIndexPoints()
         {
-            return this.value + " [" + this.rowIndex + ", " + this.columnIndex + "]" + " (" + this.points + ")";
+            string result = this.value + " [";
+            if (this.rowIndex > -1)
+                result += this.rowIndex + ", ";
+            result += this.columnIndex + "]" + " (" + this.points + ")";
+
+            return result;
         }
 
         public char this[int index]

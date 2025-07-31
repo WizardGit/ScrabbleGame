@@ -178,9 +178,9 @@ namespace ScrabbleEngine
                 {
                     if (grid[r,c].Value != Letter.NoLetter)
                     {
-                        RefreshSquare(r,c);
-                        pB.Value = intProgressValue++;
+                        RefreshSquare(r,c);                        
                     }
+                    pB.Value = intProgressValue++;
                 }
             }
         }
@@ -438,6 +438,40 @@ namespace ScrabbleEngine
             }
 
             return lstWords;
+        }
+
+        public List<Word> CheckTouchingRow(int pColIndex, int pRowIndex, string pWord)
+        {
+            List<Word> lstTouchWords = new List<Word>();
+
+            GetColumn(pRowIndex, pColIndex, out string pColAbove, out string pColBelow);
+            string catWord = pColAbove + grid[pRowIndex, pColIndex].Value.ToString() + pColBelow;
+            if ((catWord.Length > 1) && (dict.CheckWord(catWord) == true))
+            {
+                //maybe get column return as word so we can get indices on it
+                //if 
+            }
+            //else return nothing
+
+            //repeat above but for last letter of word
+            //note should be getrow not get column
+            //not only worry about prowleft for first letter and prowright for last letter
+
+            //perform above on each column
+
+
+
+
+
+
+
+                return lstTouchWords;
+        }
+
+        public List<Word> CheckTouchingColumn()
+        {
+            List<Word> lstTouchWords = new List<Word>();
+            return lstTouchWords;
         }
 
         /// <summary>

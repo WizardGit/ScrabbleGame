@@ -146,7 +146,7 @@
             SortLengthBtn.Name = "SortLengthBtn";
             SortLengthBtn.Size = new Size(122, 23);
             SortLengthBtn.TabIndex = 10;
-            SortLengthBtn.Text = "SortByLength";
+            SortLengthBtn.Text = "Sort by Length";
             SortLengthBtn.UseVisualStyleBackColor = true;
             SortLengthBtn.Click += SortLengthBtn_Click;
             // 
@@ -270,7 +270,7 @@
             // PointsScoredLbl
             // 
             PointsScoredLbl.AutoSize = true;
-            PointsScoredLbl.Location = new Point(219, 405);
+            PointsScoredLbl.Location = new Point(205, 388);
             PointsScoredLbl.Name = "PointsScoredLbl";
             PointsScoredLbl.Size = new Size(79, 15);
             PointsScoredLbl.TabIndex = 20;
@@ -279,7 +279,7 @@
             // DisplayPointsLabel
             // 
             DisplayPointsLabel.AutoSize = true;
-            DisplayPointsLabel.Location = new Point(319, 405);
+            DisplayPointsLabel.Location = new Point(205, 422);
             DisplayPointsLabel.Name = "DisplayPointsLabel";
             DisplayPointsLabel.Size = new Size(62, 15);
             DisplayPointsLabel.TabIndex = 21;
