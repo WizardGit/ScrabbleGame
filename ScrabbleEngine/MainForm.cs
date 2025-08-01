@@ -9,6 +9,8 @@ using System.Diagnostics;
  *   methodically test the new row check functionality
  *   duplicate that for the column check functionality
  *   change up the more front end methods to handle lists of lists and properly display that
+ *   
+ *   check that first word played has to touch middle
  * 
  * NOTE: with wildcard letters, it's gonna mark a letter not in the list of letters as used and then say the word is playable
  * once the word is played, it looks like a wildcard letter wasn't used, but it was.  For now, we're gonna do it ths way

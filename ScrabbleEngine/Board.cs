@@ -208,7 +208,7 @@ namespace ScrabbleEngine
             pColAbove.ColumnIndex = pColIndex;
 
             lstChars = new List<char>();
-            for (int i = pRowIndex+1; (i < gridDimension) && (this.grid[r, pColIndex].Value != Letter.NoLetter); i++)
+            for (int i = pRowIndex+1; (i < gridDimension) && (this.grid[i, pColIndex].Value != Letter.NoLetter); i++)
             {
                 lstChars.Add(this.grid[i, pColIndex].Value);
             }
@@ -524,7 +524,6 @@ namespace ScrabbleEngine
         {
             //are one of the letters for our scrabble word one that is already played that we're playing off
             bool blnHitMask = false;
-            bool blnPartOfWord = false;
             wordsMade = new List<Word>();
 
             // If our scrabble word is longer than spaces we have, return false
@@ -537,7 +536,7 @@ namespace ScrabbleEngine
             {
                 if (grid[pRowIndex, i].Value == Letter.NoLetter)
                 {
-                    if ((grid[pRowIndex, i].IsValid(pScrabbleWord[j]) == false) || (RemoveLetter(grid[pRowIndex, i].Value, ref pstrLetters) == false))
+                    if ((grid[pRowIndex, i].IsValid(pScrabbleWord[j]) == false) || (RemoveLetter(pScrabbleWord[j], ref pstrLetters) == false))
                         return false;
                 }
                 else
@@ -565,32 +564,17 @@ namespace ScrabbleEngine
             //If we actually now have a concatenated word...
             if (catWord.Length > pScrabbleWord.Length)
             {
-                // If it is a valid word, we should add it to our list of words created
-                if (dict.CheckWord(catWord) == true)
-                {
-                    Word word = new Word(catWord);
-                    word.SetAsRow();
-                    word.RowIndex = pRowIndex;
-                    word.ColumnIndex = pRowLeft.ColumnIndex;
-                    wordsMade.Add(word);
-
-                    // Our scrabble word is actually part of a bigger word (which we just added to the list)
-                    // Later in this method we should NOT be adding the scrabble word now
-                    blnPartOfWord = false;
-                }
-                // If it is not valid, we simply can't play this word
-                else
-                {
-                    return false;
-                }                    
+                // Our scrabble word is actually part of a bigger word
+                // If this is the case, we'll iterate through that bigger word later in our caller method - so just return false now
+                return false;
             }
 
             //Now deal with column words
             //Do we need to worry about going over griddimension?
-            for (int i = pColIndex; i < (pColIndex + pScrabbleWord.Length); i++)
+            for (int i = 0; i < pScrabbleWord.Length; i++)
             {
-                GetColumn(pRowIndex, pColIndex, out Word pColAbove, out Word pColBelow);
-                catWord = pColAbove + grid[pRowIndex, i].Value.ToString() + pColBelow;
+                GetColumn(pRowIndex, pColIndex+i, out Word pColAbove, out Word pColBelow);
+                catWord = pColAbove.Value + pScrabbleWord[i].ToString() + pColBelow.Value;
 
                 //If we actually now have a concatenated word...
                 if (catWord.Length > 1)
@@ -598,13 +582,10 @@ namespace ScrabbleEngine
                     // If it is a valid word, we should add it to our list of words created
                     if (dict.CheckWord(catWord) == true)
                     {
-                        wordsMade.Add(new Word(catWord));
-                        //maybe get column return as word so we can get indices on it
-
                         Word word = new Word(catWord);
                         word.SetAsColumn();
                         word.RowIndex = pColAbove.RowIndex;
-                        word.ColumnIndex = pColIndex;
+                        word.ColumnIndex = pColIndex+i;
                         wordsMade.Add(word);
                     }
                     // If it is not valid, we simply can't play this word
@@ -613,13 +594,9 @@ namespace ScrabbleEngine
                         return false;
                     }
                 }
-            }        
-
-            if (blnPartOfWord == true)
-            {
-                return true;
             }
-            else if ((wordsMade.Count > 0) || (blnHitMask == true))
+            
+            if ((wordsMade.Count > 0) || (blnHitMask == true))
             {
                 Word word = new Word(pScrabbleWord);
                 word.SetAsRow();
