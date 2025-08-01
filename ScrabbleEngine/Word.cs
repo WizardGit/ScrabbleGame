@@ -77,6 +77,15 @@ namespace ScrabbleEngine
             this.points = intTempPoints;
         }
 
+        public bool IsEmpty()
+        {
+            if (this.value == "")
+            { 
+                return true; 
+            }
+            return false;
+        }
+
         public string PrintWord()
         {
             return this.value;
