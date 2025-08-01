@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Concurrent;
+
 namespace ScrabbleEngine
 {
     public class Board
@@ -440,32 +442,158 @@ namespace ScrabbleEngine
             return lstWords;
         }
 
-        public List<Word> CheckTouchingRow(int pColIndex, int pRowIndex, string pWord)
+        public void RowLineCheck(string pstrLetters, out List<List<Word>> pLstStrWords, ProgressBar pB, int rowIndex)
         {
-            List<Word> lstTouchWords = new List<Word>();
+            int intProgressValue = 0;
 
-            GetColumn(pRowIndex, pColIndex, out string pColAbove, out string pColBelow);
-            string catWord = pColAbove + grid[pRowIndex, pColIndex].Value.ToString() + pColBelow;
-            if ((catWord.Length > 1) && (dict.CheckWord(catWord) == true))
+            if (pB != null)
             {
-                //maybe get column return as word so we can get indices on it
-                //if 
+                pB.Value = 0;
+                pB.Maximum = this.GridDimension - 1;
             }
-            //else return nothing
 
-            //repeat above but for last letter of word
-            //note should be getrow not get column
-            //not only worry about prowleft for first letter and prowright for last letter
+            pLstStrWords = new List<List<Word>>();
 
-            //perform above on each column
+            for (int i = 0; i < this.GridDimension; i++)
+            {
+                ConcurrentBag<List<Word>> bag = new ConcurrentBag<List<Word>>();
 
+                Parallel.For(0, dict.Length, j =>
+                {
+                    string scrabbleWord = dict.GetString(j);
+                    if (WordMatchRow(scrabbleWord, pstrLetters, rowIndex, i, out List<Word> wordsMade) == true)
+                    {
+                        bag.Add(wordsMade);
+                    }
+                });
+                pLstStrWords.AddRange(bag.ToList());
+                if (pB != null)
+                    pB.Value = intProgressValue++;
+            }
+        }
 
+        public bool OneLetterUsed(string pstrLetters)
+        {
+            for (int i = 0; i < pstrLetters.Length; i++)
+            {
+                if (pstrLetters[i] == Letter.NoLetter)
+                    return true;
+            }
+            return false;
+        }
 
+        public bool RemoveLetter(char pcharLetter, ref string pstrLetters)
+        {
+            char[] charListLetters = pstrLetters.ToCharArray();
 
+            for (int i = 0; i < pstrLetters.Length; i++)
+            {
+                if (charListLetters[i] == pcharLetter)
+                {
+                    charListLetters[i] = Letter.NoLetter;
+                    pstrLetters = new string(charListLetters);
+                    return true;
+                }
+            }
+            //We have no corresponding letters, but check for the wildcard
+            for (int i = 0; i < pstrLetters.Length; i++)
+            {
+                if (charListLetters[i] == Letter.AnyLetter)
+                {
+                    charListLetters[i] = Letter.NoLetter;
+                    pstrLetters = new string(charListLetters);
+                    return true;
+                }
+            }
+            return false;
+        }
 
+        public bool WordMatchRow(string pScrabbleWord, string pstrLetters, int pRowIndex, int pColIndex, out List<Word> wordsMade)
+        {
+            bool blnHitMask = false;
+            wordsMade = new List<Word>();
 
+            // If our scrabble word is longer than spaces we have, return false
+            if ((gridDimension - pColIndex) < pScrabbleWord.Length)
+                return false;
 
-                return lstTouchWords;
+            int c = pColIndex;
+            for (int i = pColIndex, j = 0; (i < gridDimension) && (j < pScrabbleWord.Length); i++, j++, c++)
+            {
+                if (grid[pRowIndex, i].Value == Letter.NoLetter)
+                {
+                    if ((grid[pRowIndex, i].IsValid(pScrabbleWord[j]) == false) || (RemoveLetter(grid[pRowIndex, i].Value, ref pstrLetters) == false))
+                        return false;
+                }
+                else
+                {
+                    if (grid[pRowIndex, i].Value != pScrabbleWord[j])
+                        return false;
+                    else
+                        blnHitMask = true;
+                }
+            }
+
+            if (OneLetterUsed(pstrLetters) == false)
+            {
+                return false;
+            }
+
+            //Get Word before the first letter of our scrabble word in the grid
+            GetRow(pRowIndex, pColIndex, out string pRowLeft, out _);
+            //Get Word after the lastt letter of our scrabble word in the grid
+            GetRow(pRowIndex, pColIndex + pScrabbleWord.Length, out string _, out string pRowRight);
+            string catWord = pRowLeft + pScrabbleWord + pRowRight;
+            //If we actually now have a concatenated word...
+            if (catWord.Length > pScrabbleWord.Length)
+            {
+                // If it is a valid word, we should add it to our list of words created
+                // If it is not valid, we simply can't play this word
+                if (dict.CheckWord(catWord) == true)
+                {
+                    wordsMade.Add(new Word(pScrabbleWord));
+                    //maybe get column return as word so we can get indices on it
+                }
+                else
+                {
+                    return false;
+                }                    
+            }
+
+            //Now deal with column words
+            // Do we need to worry about going over griddimension?
+            for (int i = pColIndex; i < (pColIndex + pScrabbleWord.Length); i++)
+            {
+                GetColumn(pRowIndex, pColIndex, out string pColAbove, out string pColBelow);
+                catWord = pColAbove + grid[pRowIndex, i].Value.ToString() + pColBelow;
+
+                //If we actually now have a concatenated word...
+                if (catWord.Length > 1)
+                {
+                    // If it is a valid word, we should add it to our list of words created
+                    // If it is not valid, we simply can't play this word
+                    if (dict.CheckWord(catWord) == true)
+                    {
+                        wordsMade.Add(new Word(catWord));
+                        //maybe get column return as word so we can get indices on it
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }        
+
+            // Update these with coords
+            if ((wordsMade.Count > 0) || (blnHitMask == true))
+            {
+                wordsMade.Add(new Word(pScrabbleWord));
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public List<Word> CheckTouchingColumn()

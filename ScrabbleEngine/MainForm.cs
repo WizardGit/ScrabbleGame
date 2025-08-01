@@ -3,15 +3,15 @@ using System.Diagnostics;
 
 /*
  * TODO:
- * even if we don't touch a letter already there but we make a word of a letter there, that counts
-
-what exactly is refresh checking?
-add istouching variable to square
-
-does findnewword find wordsand multiple others words created?
+ *   what exactly is refresh checking?
+ *
+ *   does findnewword find wordsand multiple others words created?
+ *   methodically test the new row check functionality
+ *   duplicate that for the column check functionality
+ *   change up the more front end methods to handle lists of lists and properly display that
  * 
- * 
- * 
+ * NOTE: with wildcard letters, it's gonna mark a letter not in the list of letters as used and then say the word is playable
+ * once the word is played, it looks like a wildcard letter wasn't used, but it was.  For now, we're gonna do it ths way
  * 
  */
 
