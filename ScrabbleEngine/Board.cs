@@ -48,6 +48,37 @@ namespace ScrabbleEngine
 
             DiamondReflectBonus(Square.BonusType.tripleWord, 7, 0);
             DiamondReflectBonus(Square.BonusType.doubleLetter, 7, 3);
+        }
+
+        public Board(char[,] pCharBoard)
+        {
+            dict = new Dictionary();
+            grid = new Square[gridDimension, gridDimension];
+
+            for (int r = 0; r < gridDimension; r++)
+            {
+                for (int c = 0; c < gridDimension; c++)
+                {
+                    grid[r, c] = new Square(Square.BonusType.nothing, pCharBoard[r, c]);
+                }
+            }
+
+            SquareReflectBonus(Square.BonusType.tripleWord, 0, 0);
+            SquareReflectBonus(Square.BonusType.doubleWord, 1, 1);
+            SquareReflectBonus(Square.BonusType.doubleWord, 2, 2);
+            SquareReflectBonus(Square.BonusType.doubleWord, 3, 3);
+            SquareReflectBonus(Square.BonusType.doubleWord, 4, 4);
+            SquareReflectBonus(Square.BonusType.tripleLetter, 5, 5);
+            SquareReflectBonus(Square.BonusType.doubleLetter, 6, 6);
+            SquareReflectBonus(Square.BonusType.tripleLetter, 5, 1);
+            SquareReflectBonus(Square.BonusType.doubleLetter, 3, 0);
+            SquareReflectBonus(Square.BonusType.doubleLetter, 6, 2);
+            SquareReflectBonus(Square.BonusType.tripleLetter, 1, 5);
+            SquareReflectBonus(Square.BonusType.doubleLetter, 0, 3);
+            SquareReflectBonus(Square.BonusType.doubleLetter, 2, 6);
+
+            DiamondReflectBonus(Square.BonusType.tripleWord, 7, 0);
+            DiamondReflectBonus(Square.BonusType.doubleLetter, 7, 3);
         }        
 
         public Square this[int row, int column]
@@ -283,7 +314,7 @@ namespace ScrabbleEngine
             {
                 for (int c = 0; c < gridDimension; c++)
                 {
-                    if (GetWord(r, c, out Word pColWord, out Word pRowWord) == true)
+                    if (GetWord(this, r, c, out Word pColWord, out Word pRowWord) == true)
                     {
                         if ((pColWord.Value != "") && (dict.CheckWord(pColWord.Value) == false))
                         {
@@ -300,100 +331,48 @@ namespace ScrabbleEngine
             }
             pWrongWord = "";
             return true;
-        }        
+        } 
 
-        public bool GetWord(int pRowIndex, int pColIndex, out Word pColWord, out Word pRowWord)
+        /// <summary>
+        /// If the specified value at the pRowIndex and pColIndex is part of a column and/or a row word, returns those words
+        /// </summary>
+        /// <param name="pBoard"></param>
+        /// <param name="pRowIndex"></param>
+        /// <param name="pColIndex"></param>
+        /// <param name="pColWord"></param>
+        /// <param name="pRowWord"></param>
+        /// <returns>True if it could at least get one column and/or row word</returns>
+        public bool GetWord(Board pBoard, int pRowIndex, int pColIndex, out Word pColWord, out Word pRowWord)
         {
-            if (grid[pRowIndex, pColIndex].Value == Letter.NoLetter)
+            if (pBoard[pRowIndex, pColIndex].Value == Letter.NoLetter)
             {
                 pColWord = new Word("");
                 pRowWord = new Word("");
                 return false;
             }
 
-            int origRow = -1;
-            int origCol = -1;
+            int origRow;
+            int origCol;
 
-            //Go to top 
+            //Go to top of word 
             int r = pRowIndex;
-            while ((r >= 0) && (this.grid[r, pColIndex].Value != Letter.NoLetter))
+            while ((r >= 0) && (pBoard[r, pColIndex].Value != Letter.NoLetter))
             {
                 r--;
             }
             r++;
+
+            //Variables dictating where the top of the column word begins
             origRow = r;
             origCol = pColIndex;
             List<char> lstChars = new List<char>();
 
-            for (int i = r; ((i < (gridDimension - 1)) && (this.grid[i, pColIndex].Value != Letter.NoLetter)) ; i++)
+            //Start adding the letters from the complete word until we hit the bottom of the board or a non-letter character
+            for (int i = r; ((i < (gridDimension - 1)) && (pBoard[i, pColIndex].Value != Letter.NoLetter)); i++)
             {
-                lstChars.Add(this.grid[i, pColIndex].Value);
+                lstChars.Add(pBoard[i, pColIndex].Value);
             }
-            if (lstChars.Count > 1)
-            {
-                pColWord = new Word(new string(lstChars.ToArray()));
-                pColWord.SetAsColumn();
-                pColWord.RowIndex = origRow;
-                pColWord.ColumnIndex = origCol;                
-            }                
-            else
-                pColWord = new Word("");
-
-            //Go to top 
-            int c = pColIndex;
-            while ((c >= 0) && (this.grid[pRowIndex, c].Value != Letter.NoLetter))
-            {
-                c--;
-            }
-            c++;
-            origRow = pRowIndex;
-            origCol = c;
-            lstChars = new List<char>();
-
-            for (int i = c; ((i < (gridDimension - 1)) && (this.grid[pRowIndex, i].Value != Letter.NoLetter)); i++)
-            {
-                lstChars.Add(this.grid[pRowIndex, i].Value);
-            }
-            if (lstChars.Count > 1)
-            {
-                pRowWord = new Word(new string(lstChars.ToArray()));
-                pRowWord.SetAsRow();
-                pRowWord.RowIndex = origRow;
-                pRowWord.ColumnIndex = origCol;
-            }
-            else
-                pRowWord = new Word("");
-
-            return true;
-        }
-
-        public bool GetWord(char[,] charBoard, int pRowIndex, int pColIndex, out Word pColWord, out Word pRowWord)
-        {
-            if (charBoard[pRowIndex, pColIndex] == Letter.NoLetter)
-            {
-                pColWord = new Word("");
-                pRowWord = new Word("");
-                return false;
-            }
-
-            int origRow = -1;
-            int origCol = -1;
-
-            //Go to top 
-            int r = pRowIndex;
-            while ((r >= 0) && (charBoard[r, pColIndex] != Letter.NoLetter))
-            {
-                r--;
-            }
-            r++;
-            origRow = r;
-            origCol = pColIndex;
-            List<char> lstChars = new List<char>();
-
-            for (int i = r; ((i < (gridDimension - 1)) && (charBoard[i, pColIndex] != Letter.NoLetter)); i++)
-            {
-                lstChars.Add(charBoard[i, pColIndex]);
-            }
+            // If we actually made a word, record that
             if (lstChars.Count > 1)
             {
                 pColWord = new Word(new string(lstChars.ToArray()));
@@ -404,20 +383,21 @@ namespace ScrabbleEngine
             else
                 pColWord = new Word("");
 
-            //Go to top 
+            //Go to left of the word 
             int c = pColIndex;
-            while ((c >= 0) && (charBoard[pRowIndex, c] != Letter.NoLetter))
+            while ((c >= 0) && (pBoard[pRowIndex, c].Value != Letter.NoLetter))
             {
                 c--;
             }
             c++;
+
+            //These variables hold where the word begins to the left
             origRow = pRowIndex;
             origCol = c;
             lstChars = new List<char>();
-
-            for (int i = c; ((i < (gridDimension - 1)) && (charBoard[pRowIndex, i] != Letter.NoLetter)); i++)
+            for (int i = c; ((i < (gridDimension - 1)) && (pBoard[pRowIndex, i].Value != Letter.NoLetter)); i++)
             {
-                lstChars.Add(charBoard[pRowIndex, i]);
+                lstChars.Add(pBoard[pRowIndex, i].Value);
             }
             if (lstChars.Count > 1)
             {
@@ -429,10 +409,19 @@ namespace ScrabbleEngine
             else
                 pRowWord = new Word("");
 
-            return true;
+            if ((pRowWord.Value == "") && (pColWord.Value == ""))
+                return false;
+            else
+                return true;
         }
 
-        public List<Word> GetNewWord(char[,] pCharBoard)
+        /// <summary>
+        /// Compares pBoard against this.grid to find new words on pBoard.  
+        /// </summary>
+        /// <param name="pBoard"></param>
+        /// <returns>Returns list of new words on board</returns>
+        /// <exception cref="Exception">Square that was different but no new words there...???</exception>
+        public List<Word> GetNewWord(Board pBoard)
         {
             List<Word> lstWords = new List<Word>();
 
@@ -440,20 +429,43 @@ namespace ScrabbleEngine
             {
                 for (int c = 0; c < gridDimension; c++)
                 {
-                    if (grid[r, c].Value != pCharBoard[r,c])
+                    if (grid[r, c].Value != pBoard[r,c].Value)
                     {
-                        GetWord(pCharBoard, r, c, out Word pColWord, out Word pRowWord);
-                        if (pColWord.Value != "")
-                            pColWord.AddToList(ref lstWords, true);
-                        if (pRowWord.Value != "")
-                            pRowWord.AddToList(ref lstWords, true);
+                        if (GetWord(pBoard, r, c, out Word pColWord, out Word pRowWord) == true)
+                        {
+                            if (pColWord.Value != "")
+                                pColWord.AddToList(ref lstWords, true);
+                            if (pRowWord.Value != "")
+                                pRowWord.AddToList(ref lstWords, true);
+                        }
+                        else
+                        {
+                            throw new Exception("There is a wrong word on the board!");
+                        }                        
                     }
                 }
             }
 
-            return lstWords;
+            List<Word> results = new List<Word>();
+
+            //We got a ton of results, so we need to filter out duplicate results
+            foreach (Word word in lstWords)
+            {
+                if (word.InList(results) == false)
+                    results.Add(word);
+            }
+
+            return results;
         }
 
+        /// <summary>
+        /// Returns pLstStrWords (List of List of words) of all possible words to be played at rowIndex row.
+        /// Each list in pLstStrWords contains all words constructed from playing one word.
+        /// </summary>
+        /// <param name="pstrLetters"></param>
+        /// <param name="pLstStrWords"></param>
+        /// <param name="pB"></param>
+        /// <param name="rowIndex"></param>
         public void RowLineCheck(string pstrLetters, out List<List<Word>> pLstStrWords, ProgressBar pB, int rowIndex)
         {
             int intProgressValue = 0;
@@ -484,6 +496,11 @@ namespace ScrabbleEngine
             }
         }
 
+        /// <summary>
+        /// Checks if at least one of the letters in pstrLetters is a Letter.NoLetter
+        /// </summary>
+        /// <param name="pstrLetters"></param>
+        /// <returns></returns>
         public bool OneLetterUsed(string pstrLetters)
         {
             for (int i = 0; i < pstrLetters.Length; i++)
@@ -494,6 +511,13 @@ namespace ScrabbleEngine
             return false;
         }
 
+        /// <summary>
+        /// Removes the specified pcharletter out of pstrLetters (will just remove the first if multiple of the same letter
+        /// If there is a wildcard letter and it can't find any of pcharletter, it will remove the wildcard letter
+        /// </summary>
+        /// <param name="pcharLetter"></param>
+        /// <param name="pstrLetters"></param>
+        /// <returns></returns>
         public bool RemoveLetter(char pcharLetter, ref string pstrLetters)
         {
             char[] charListLetters = pstrLetters.ToCharArray();
@@ -610,12 +634,6 @@ namespace ScrabbleEngine
             {
                 return false;
             }
-        }
-
-        public List<Word> CheckTouchingColumn()
-        {
-            List<Word> lstTouchWords = new List<Word>();
-            return lstTouchWords;
         }
 
         /// <summary>

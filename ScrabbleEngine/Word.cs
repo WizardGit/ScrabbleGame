@@ -116,9 +116,9 @@ namespace ScrabbleEngine
             get { return this.letterList[index].Value; }
             set { this.letterList[index].Value = value; }
         }
-        public void AddToList(ref List<Word> pLstStrWords, bool pCheckIndex = false)
+        public void AddToList(ref List<Word> pLstWords, bool pCheckIndex = false)
         {
-            foreach (Word word in pLstStrWords)
+            foreach (Word word in pLstWords)
             {
                 if (pCheckIndex == true)
                 {
@@ -132,7 +132,23 @@ namespace ScrabbleEngine
                     return;
                 }
             }
-            pLstStrWords.Add(this);
+            pLstWords.Add(this);
+        }
+
+        public bool InList(List<Word> pLstWords)
+        {
+            foreach(Word word in pLstWords)
+            {
+                if ((this.rowIndex == word.rowIndex) && 
+                    (this.columnIndex == word.columnIndex) && 
+                    (this.isRow == word.isRow) && 
+                    (this.isColumn == word.isColumn) &&
+                    (this.value == word.value))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool RemoveLetter(char pcharLetter, ref string pstrLetters)

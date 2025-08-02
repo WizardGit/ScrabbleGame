@@ -10,7 +10,6 @@ using System.Diagnostics;
  *   duplicate that for the column check functionality
  *   change up the more front end methods to handle lists of lists and properly display that
  *   
- *   check that first word played has to touch middle
  * 
  * NOTE: with wildcard letters, it's gonna mark a letter not in the list of letters as used and then say the word is playable
  * once the word is played, it looks like a wildcard letter wasn't used, but it was.  For now, we're gonna do it ths way
@@ -110,16 +109,15 @@ namespace ScrabbleEngine
             {
                 for (int col = 0; col < 15; col++)
                 {
-                    TextBox? tb = gridTableLayout.GetControlFromPosition(col, row) as TextBox;
-                    if (tb != null)
+                    if (gridTableLayout.GetControlFromPosition(col, row) is TextBox tb)
                     {
                         if (tb.Text.Length == 0)
                             board[row, col] = Letter.NoLetter;
                         else
-                            board[row, col] = tb.Text[0];                        
+                            board[row, col] = tb.Text[0];
                     }
                     else
-                        throw new Exception("One of the form tablelayout textboxes is null...");                        
+                        throw new Exception("One of the form tablelayout textboxes is null...");
                 }
             }
             return board;
@@ -300,8 +298,9 @@ namespace ScrabbleEngine
         {
             int multiplicationFactor = 1;
 
-            TextBox? tb = gridTableLayout.GetControlFromPosition(7,7) as TextBox;
-            if ((tb == null) || (tb.Text.Length != 1) || (char.IsLetter(tb.Text[0]) == false))
+            if ((gridTableLayout.GetControlFromPosition(7, 7) is not TextBox tb) || 
+                (tb.Text.Length != 1) || 
+                (char.IsLetter(tb.Text[0]) == false))
             {
                 MessageBox.Show("There is no word on the middle space!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -310,10 +309,11 @@ namespace ScrabbleEngine
             {
                 // First scrabble word gets automatic double word score
                 // It's impossible to hit any other word bonuses on the first word play
-                multiplicationFactor *= 2;                
+                multiplicationFactor *= 2;
             }
 
-            List<Word> newWords = dataBoard.GetNewWord(GetTableLayoutPanelBoard());
+            Board charBoard = new Board(GetTableLayoutPanelBoard());
+            List<Word> newWords = dataBoard.GetNewWord(charBoard);
 
             foreach (Word newWord in newWords)
             {
