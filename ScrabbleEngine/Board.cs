@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace ScrabbleEngine
 {
@@ -101,29 +102,31 @@ namespace ScrabbleEngine
             return true;
         }
 
-        public List<Word> BoardCheck(string pstrLetters, ProgressBar pb)
-        {  
+        public List<List<Word>> BoardCheck(string pstrLetters, ProgressBar pb)
+        {
+            List<List<Word>> possibleWordList = new List<List<Word>>();
             if (IsEmpty() == true)
             {
                 Line simpleLine = new Line();
                 simpleLine.SimpleLineCheck(pstrLetters, out List<Word> pSimpleWordList, pb);
-                return pSimpleWordList;
+                possibleWordList.Add(pSimpleWordList);
             }
-
-            List<Word> possibleWordList = new List<Word>();
-
-            for (int r = 0; r < gridDimension; r++)
+            else
             {
-                RowCheck(pstrLetters, out List<Word> pWordList, pb, r);
-                possibleWordList.AddRange(pWordList);
-            }
+                for (int r = 0; r < gridDimension; r++)
+                {
+                    RowLineCheck(pstrLetters, out List<List<Word>> pWordList, pb, r);
+                    possibleWordList.AddRange(pWordList);
+                }
 
 
-            for (int c = 0; c < gridDimension; c++)
-            {
-                ColumnCheck(pstrLetters, out List<Word> pWordList, pb, c);
-                possibleWordList.AddRange(pWordList);
+                for (int c = 0; c < gridDimension; c++)
+                {
+                    ColumnLineCheck(pstrLetters, out List<List<Word>> pWordList, pb, c);
+                    possibleWordList.AddRange(pWordList);
+                }
             }
+            
             return possibleWordList;
         }
 
@@ -147,58 +150,7 @@ namespace ScrabbleEngine
             grid[pRow, indexGridDimension - pColumn].Bonus = pBonus;
         }        
 
-        private void RowCheck(string pstrLetters, out List<Word> pWordList, ProgressBar pb, int pRow)
-        {
-            Line line = new Line();
-
-            for (int c = 0; c < gridDimension; c++)
-            {
-                line.AddSquare(grid[pRow, c]);
-            }
-            if (line.IsEmpty() == false)
-                line.LineCheck(pstrLetters, out pWordList, pb);
-            else
-            {
-                pWordList = new List<Word>();
-                return;
-            }                
-
-            //All words in "line" are words for a row so set that
-            foreach (Word word in pWordList)
-            {
-                word.SetAsRow();
-                word.ColumnIndex = word.ColumnIndex;
-                word.RowIndex = pRow;
-            }
-        }
-
-        private void ColumnCheck(string pstrLetters, out List<Word> pWordList, ProgressBar pb, int pColumn)
-        {
-            Line line = new Line();
-
-            for (int r = 0; r < gridDimension; r++)
-            {
-                line.AddSquare(grid[r, pColumn]);
-            }
-            
-            if (line.IsEmpty() == false)
-                line.LineCheck(pstrLetters, out pWordList, pb);
-            else
-            {
-                pWordList = new List<Word>();
-                return;
-            }
-
-            //All words in "line" are words for a column so set that
-            foreach (Word word in pWordList)
-            {
-                word.SetAsColumn();
-                //line check is setting each word as the column index, we need to flip that for this function
-                word.RowIndex = word.ColumnIndex;
-                word.ColumnIndex = pColumn;
-            }
-        }
-
+        
         public void RefreshBoard(ProgressBar pB)
         {
             int intProgressValue = 0;
@@ -465,8 +417,8 @@ namespace ScrabbleEngine
         /// <param name="pstrLetters"></param>
         /// <param name="pLstStrWords"></param>
         /// <param name="pB"></param>
-        /// <param name="rowIndex"></param>
-        public void RowLineCheck(string pstrLetters, out List<List<Word>> pLstStrWords, ProgressBar pB, int rowIndex)
+        /// <param name="pRowIndex"></param>
+        public void RowLineCheck(string pstrLetters, out List<List<Word>> pLstStrWords, ProgressBar pB, int pRowIndex)
         {
             int intProgressValue = 0;
 
@@ -485,7 +437,45 @@ namespace ScrabbleEngine
                 Parallel.For(0, dict.Length, j =>
                 {
                     string scrabbleWord = dict.GetString(j);
-                    if (WordMatchRow(scrabbleWord, pstrLetters, rowIndex, i, out List<Word> wordsMade) == true)
+                    if (WordMatchRow(scrabbleWord, pstrLetters, pRowIndex, i, out List<Word> wordsMade) == true)
+                    {
+                        bag.Add(wordsMade);
+                    }
+                });
+                pLstStrWords.AddRange(bag.ToList());
+                if (pB != null)
+                    pB.Value = intProgressValue++;
+            }
+        }
+
+        /// <summary>
+        /// Returns pLstStrWords (List of List of words) of all possible words to be played at rowIndex row.
+        /// Each list in pLstStrWords contains all words constructed from playing one word.
+        /// </summary>
+        /// <param name="pstrLetters"></param>
+        /// <param name="pLstStrWords"></param>
+        /// <param name="pB"></param>
+        /// <param name="rowIndex"></param>
+        public void ColumnLineCheck(string pstrLetters, out List<List<Word>> pLstStrWords, ProgressBar pB, int pColIndex)
+        {
+            int intProgressValue = 0;
+
+            if (pB != null)
+            {
+                pB.Value = 0;
+                pB.Maximum = this.GridDimension - 1;
+            }
+
+            pLstStrWords = new List<List<Word>>();
+
+            for (int i = 0; i < this.GridDimension; i++)
+            {
+                ConcurrentBag<List<Word>> bag = new ConcurrentBag<List<Word>>();
+
+                Parallel.For(0, dict.Length, j =>
+                {
+                    string scrabbleWord = dict.GetString(j);
+                    if (WordMatchColumn(scrabbleWord, pstrLetters, i, pColIndex, out List<Word> wordsMade) == true)
                     {
                         bag.Add(wordsMade);
                     }
@@ -544,6 +534,15 @@ namespace ScrabbleEngine
             return false;
         }
 
+        /// <summary>
+        /// Checks if the supplied scrabble word can be played at the specified row and column indexes.
+        /// </summary>
+        /// <param name="pScrabbleWord"></param>
+        /// <param name="pstrLetters"></param>
+        /// <param name="pRowIndex"></param>
+        /// <param name="pColIndex"></param>
+        /// <param name="wordsMade">List of words of all words completed</param>
+        /// <returns>All possible words made, if the scrabble word can be played at the position</returns>
         public bool WordMatchRow(string pScrabbleWord, string pstrLetters, int pRowIndex, int pColIndex, out List<Word> wordsMade)
         {
             //are one of the letters for our scrabble word one that is already played that we're playing off
@@ -624,6 +623,106 @@ namespace ScrabbleEngine
             {
                 Word word = new Word(pScrabbleWord);
                 word.SetAsRow();
+                word.RowIndex = pRowIndex;
+                word.ColumnIndex = pColIndex;
+                wordsMade.Add(word);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if the supplied scrabble word can be played at the specified row and column indexes.
+        /// </summary>
+        /// <param name="pScrabbleWord"></param>
+        /// <param name="pstrLetters"></param>
+        /// <param name="pRowIndex"></param>
+        /// <param name="pColIndex"></param>
+        /// <param name="wordsMade">List of words of all words completed</param>
+        /// <returns>All possible words made, if the scrabble word can be played at the position</returns>
+        public bool WordMatchColumn(string pScrabbleWord, string pstrLetters, int pRowIndex, int pColIndex, out List<Word> wordsMade)
+        {
+            //are one of the letters for our scrabble word one that is already played that we're playing off
+            bool blnHitMask = false;
+            wordsMade = new List<Word>();
+
+            // If our scrabble word is longer than spaces we have, return false
+            if ((gridDimension - pRowIndex) < pScrabbleWord.Length)
+                return false;
+
+            //Check if our word is playable in this position
+            int r = pRowIndex;
+            for (int i = pRowIndex, j = 0; (i < gridDimension) && (j < pScrabbleWord.Length); i++, j++, r++)
+            {
+                if (grid[i, pColIndex].Value == Letter.NoLetter)
+                {
+                    if ((grid[i, pColIndex].IsValid(pScrabbleWord[j]) == false) || (RemoveLetter(pScrabbleWord[j], ref pstrLetters) == false))
+                        return false;
+                }
+                else
+                {
+                    if (grid[i, pColIndex].Value != pScrabbleWord[j])
+                        return false;
+                    else
+                        blnHitMask = true;
+                }
+            }
+
+            //Check to make sure we have used at least one of our letters to make the word
+            if (OneLetterUsed(pstrLetters) == false)
+            {
+                return false;
+            }
+            //At this point we have now verified that our word can be played in this position
+            //We now must check words around us
+
+            //Get Word before the first letter of our scrabble word in the grid
+            GetColumn(pRowIndex, pColIndex, out Word pColAbove, out _);
+            //Get Word after the last letter of our scrabble word in the grid
+            GetColumn(pRowIndex + pScrabbleWord.Length - 1, pColIndex, out _, out Word pColBelow);
+            string catWord = pColAbove.Value + pScrabbleWord + pColBelow.Value;
+            //If we actually now have a concatenated word...
+            if (catWord.Length > pScrabbleWord.Length)
+            {
+                // Our scrabble word is actually part of a bigger word
+                // If this is the case, we'll iterate through that bigger word later in our caller method - so just return false now
+                return false;
+            }
+
+            //Now deal with row words
+            for (int i = 0; i < pScrabbleWord.Length; i++)
+            {
+                GetRow(pRowIndex + i, pColIndex, out Word pRowLeft, out Word pRowRight);
+                catWord = pRowLeft.Value + pScrabbleWord[i].ToString() + pRowRight.Value;
+
+                //If we actually now have a concatenated word...
+                if (catWord.Length > 1)
+                {
+                    // If it is a valid word, we should add it to our list of words created
+                    if (dict.CheckWord(catWord) == true)
+                    {
+                        Word word = new Word(catWord);
+                        word.SetAsRow();
+                        word.RowIndex = pRowIndex + i;
+                        word.ColumnIndex = pRowLeft.ColumnIndex;
+                        wordsMade.Add(word);
+                    }
+                    // If it is not valid, we simply can't play this word
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            if ((wordsMade.Count > 0) || (blnHitMask == true))
+            {
+                Word word = new Word(pScrabbleWord);
+                word.SetAsColumn();
                 word.RowIndex = pRowIndex;
                 word.ColumnIndex = pColIndex;
                 wordsMade.Add(word);

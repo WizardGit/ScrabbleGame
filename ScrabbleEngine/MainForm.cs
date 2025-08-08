@@ -9,6 +9,7 @@ using System.Diagnostics;
  *   methodically test the new row check functionality
  *   duplicate that for the column check functionality
  *   change up the more front end methods to handle lists of lists and properly display that
+ *   sort is broken because of listlistword
  *   
  * 
  * NOTE: with wildcard letters, it's gonna mark a letter not in the list of letters as used and then say the word is playable
@@ -22,6 +23,7 @@ namespace ScrabbleEngine
     {
         private bool blnSortAscending;
         private List<Word> lstWords;
+        private List<List<Word>> lstLstWords;
         private Board dataBoard;
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -59,6 +61,7 @@ namespace ScrabbleEngine
             dataBoard = new Board();
             blnSortAscending = true;
             lstWords = new List<Word>();
+            lstLstWords = new List<List<Word>>();
             SortComboBox.SelectedIndex = 0;
             CreateBoard();
             HookUpTextChangedHandlers();
@@ -267,14 +270,22 @@ namespace ScrabbleEngine
         private void ListWordsBtn_Click(object sender, EventArgs e)
         {
             string strLetters = LettersTextbox.Text.ToLower().Trim();
-            List<Word> lstStrWords = dataBoard.BoardCheck(strLetters, ProgressBar);
-            lstWords = lstStrWords;
+            List<List<Word>> lstStrWords = dataBoard.BoardCheck(strLetters, ProgressBar);
+            lstLstWords = lstStrWords;
             DisplayListBox.Items.Clear();
 
-            foreach (Word word in lstStrWords)
+            foreach(List<Word> lstWords in lstStrWords)
             {
-                DisplayListBox.Items.Add(word.PrintWordIndexPoints());
-            }
+                string strBigWords = "";
+                int totalPoints = 0;
+
+                foreach (Word word in lstWords)
+                {
+                    strBigWords += word.PrintWordIndexPoints() + " ";
+                    totalPoints += word.Points;                    
+                }
+                DisplayListBox.Items.Add(strBigWords + " (" + totalPoints.ToString() + ")");
+            }            
         }
 
         private void RefreshValidBtn_Click(object sender, EventArgs e)

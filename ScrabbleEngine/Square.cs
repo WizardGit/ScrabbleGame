@@ -19,12 +19,8 @@ namespace ScrabbleEngine
         {
             get { return value; }
             set 
-            { 
-                this.value = value;
-                validValues = new List<Letter>
-                {
-                    new Letter(value)
-                };
+            {
+                SetLetter(value);
             }
         }
 
@@ -45,14 +41,23 @@ namespace ScrabbleEngine
                 bonusType = pBonusType;
             }
 
-            value = pstrValue;
             validValues = new List<Letter>();
-            if (pstrValue != Letter.NoLetter)
-            {                
-                validValues.Add(new Letter(pstrValue));
+            SetLetter(pstrValue);
+        } 
+
+        /// <summary>
+        /// Sets the letter value of our Square, if our letter is empty, it will reset the square value and validValues list
+        /// </summary>
+        /// <param name="pCharLetter"></param>
+        public void SetLetter(char pCharLetter)
+        {
+            validValues = new List<Letter>();
+            if (pCharLetter != Letter.NoLetter)
+            {
+                validValues.Add(new Letter(pCharLetter));
             }
             else
-            {                
+            {
                 validValues.Add(new Letter('a'));
                 validValues.Add(new Letter('b'));
                 validValues.Add(new Letter('c'));
@@ -79,8 +84,9 @@ namespace ScrabbleEngine
                 validValues.Add(new Letter('x'));
                 validValues.Add(new Letter('y'));
                 validValues.Add(new Letter('z'));
-            }                
-        } 
+            }
+            this.value = pCharLetter;
+        }
         public bool IsValid(char pLetter)
         {
             foreach (Letter l in this.validValues)

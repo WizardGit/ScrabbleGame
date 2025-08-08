@@ -138,5 +138,20 @@ namespace ScrabbleTests
             Assert.AreEqual("card", lstNewWords[0].Value);
             Assert.AreEqual("bead", lstNewWords[1].Value);
         }
+
+        [TestMethod]
+        public void TestEmpty()
+        {
+            Board board1 = new Board();
+
+            Assert.AreEqual(true, board1.IsEmpty());
+
+            board1[7, 6].Value = 'b';
+            Assert.AreEqual(false, board1.IsEmpty());
+
+            board1 = new Board();
+            board1[14, 14].Value = 'b';
+            Assert.AreEqual(false, board1.IsEmpty());
+        }
     }
 }
