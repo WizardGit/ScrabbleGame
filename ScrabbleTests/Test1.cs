@@ -153,5 +153,85 @@ namespace ScrabbleTests
             board1[14, 14].Value = 'b';
             Assert.AreEqual(false, board1.IsEmpty());
         }
+
+        [TestMethod]
+        public void TestReflectBonus()
+        {
+            Board board1 = new Board();
+            //Board already runs the Reflect Methods, so let's verify that
+            board1.SquareReflectBonus(Square.BonusType.tripleWord, 1,1);
+            Assert.AreEqual(Square.BonusType.tripleWord, board1[1, 1].Bonus);
+            Assert.AreEqual(Square.BonusType.tripleWord, board1[13, 1].Bonus);
+            Assert.AreEqual(Square.BonusType.tripleWord, board1[1, 13].Bonus);
+            Assert.AreEqual(Square.BonusType.tripleWord, board1[13, 13].Bonus);
+            //Test out of quadrant for row
+            Assert.ThrowsException<Exception>(() =>
+            {
+                board1.DiamondReflectBonus(Square.BonusType.tripleWord, 8, 2);
+            });
+            //Test out of column range
+            Assert.ThrowsException<Exception>(() =>
+            {
+                board1.DiamondReflectBonus(Square.BonusType.tripleWord, 5, 20);
+            });
+
+            board1.DiamondReflectBonus(Square.BonusType.doubleLetter, 7, 6);
+            Assert.AreEqual(Square.BonusType.doubleLetter, board1[7, 6].Bonus);
+            Assert.AreEqual(Square.BonusType.doubleLetter, board1[6, 7].Bonus);
+            Assert.AreEqual(Square.BonusType.doubleLetter, board1[8, 7].Bonus);
+            Assert.AreEqual(Square.BonusType.doubleLetter, board1[7, 8].Bonus);
+            //Test not on row 7
+            Assert.ThrowsException<Exception>(() =>
+            {
+                board1.DiamondReflectBonus(Square.BonusType.doubleLetter, 6, 6);
+            });
+            //Test out of column range
+            Assert.ThrowsException<Exception>(() =>
+            {
+                board1.DiamondReflectBonus(Square.BonusType.doubleLetter, 7, 15);
+            });
+        }
+
+        [TestMethod]
+        public void TestGetWordColumn()
+        {
+            Board board1 = new Board();
+
+            board1.GetRow(4,5, out Word pRowLeft, out Word pRowRight);
+            board1.GetColumn(4, 5, out Word pColumnAbove, out Word pColumnBelow);
+            Assert.AreEqual("", pRowLeft.Value);
+            Assert.AreEqual("", pRowRight.Value);
+            Assert.AreEqual("", pColumnAbove.Value);
+            Assert.AreEqual("", pColumnBelow.Value);
+
+            board1[7, 6].Value = 'b';
+            board1[7, 7].Value = 'e';
+            board1[7, 8].Value = 'a';
+            board1[7, 9].Value = 'd';
+            board1.GetRow(7, 6, out pRowLeft, out pRowRight);
+            board1.GetColumn(7, 6, out pColumnAbove, out pColumnBelow);
+            Assert.AreEqual("", pRowLeft.Value);
+            //Not a valid word, but that's not the intention of our method anyway
+            Assert.AreEqual("ead", pRowRight.Value);
+            Assert.AreEqual("", pColumnAbove.Value);
+            Assert.AreEqual("", pColumnBelow.Value);
+            board1.GetRow(7, 5, out pRowLeft, out pRowRight);
+            Assert.AreEqual("", pRowLeft.Value);
+            Assert.AreEqual("bead", pRowRight.Value);
+
+            board1[4, 9].Value = 'c';
+            board1[5, 9].Value = 'a';
+            board1[6, 9].Value = 'r';
+            board1.GetRow(4, 9, out pRowLeft, out pRowRight);
+            board1.GetColumn(4, 9, out pColumnAbove, out pColumnBelow);
+            Assert.AreEqual("", pRowLeft.Value);
+            //Not a valid word, but that's not the intention of our method anyway
+            Assert.AreEqual("", pRowRight.Value);
+            Assert.AreEqual("", pColumnAbove.Value);
+            Assert.AreEqual("ard", pColumnBelow.Value);
+            board1.GetColumn(3, 9, out pColumnAbove, out pColumnBelow);
+            Assert.AreEqual("", pColumnAbove.Value);
+            Assert.AreEqual("card", pColumnBelow.Value);
+        }
     }
 }

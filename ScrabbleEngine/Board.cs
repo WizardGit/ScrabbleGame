@@ -130,8 +130,19 @@ namespace ScrabbleEngine
             return possibleWordList;
         }
 
-        private void SquareReflectBonus(Square.BonusType pBonus, int pRow, int pColumn)
-        {
+        /// <summary>
+        /// Reflects the specified bonus type in a square pattern
+        /// pRow and PColumn should be position of top left square to be reflected
+        /// </summary>
+        /// <param name="pBonus"></param>
+        /// <param name="pRow"></param>
+        /// <param name="pColumn"></param>
+        public void SquareReflectBonus(Square.BonusType pBonus, int pRow, int pColumn)
+        {            
+            // Since we need to be the top left square of a square reflection, we shoud always be in the top left quadrant of the board!
+            if ((pRow >= 7) || (pRow < 0) || (pColumn >= 7) || (pColumn < 0))
+                throw new Exception("Specified row or column are outside the top left quadrant of the board!");
+
             int indexGridDimension = gridDimension - 1;
 
             grid[pRow, pColumn].Bonus = pBonus;
@@ -140,8 +151,19 @@ namespace ScrabbleEngine
             grid[indexGridDimension - pRow, indexGridDimension - pColumn].Bonus = pBonus;
         }
 
-        private void DiamondReflectBonus(Square.BonusType pBonus, int pRow, int pColumn)
+        /// <summary>
+        /// Reflects the specified bonus type in a diamond pattern
+        /// pRow and Pcolumn should be middle left square of the diamond reflect
+        /// </summary>
+        /// <param name="pBonus"></param>
+        /// <param name="pRow"></param>
+        /// <param name="pColumn"></param>
+        public void DiamondReflectBonus(Square.BonusType pBonus, int pRow, int pColumn)
         {
+            // Diamond reflect should only be used when row is 7 and column is not outside bounds of the board!
+            if ((pRow != 7) || (pColumn >= gridDimension) || (pColumn < 0))
+                throw new Exception("Specified row or column are outside the allowed bounds when trying to reflect it!");
+
             int indexGridDimension = gridDimension - 1;
 
             grid[pRow, pColumn].Bonus = pBonus;
@@ -149,29 +171,19 @@ namespace ScrabbleEngine
             grid[indexGridDimension - pColumn, pRow].Bonus = pBonus;
             grid[pRow, indexGridDimension - pColumn].Bonus = pBonus;
         }        
-
-        
-        public void RefreshBoard(ProgressBar pB)
-        {
-            int intProgressValue = 0;
-            pB.Value = 0;
-            pB.Maximum = gridDimension * gridDimension;
-
-            for (int r = 0;r < gridDimension; r++)
-            {
-                for (int c = 0;c < gridDimension; c++)
-                {
-                    if (grid[r,c].Value != Letter.NoLetter)
-                    {
-                        RefreshSquare(r,c);                        
-                    }
-                    pB.Value = intProgressValue++;
-                }
-            }
-        }
-
+                
+        /// <summary>
+        /// Gets words above/below of specified square on column
+        /// If no word, it will return Word with no value
+        /// This method DOES NOT check if the word is a valid word, or that the letter in each square is actually valid to be there!
+        /// </summary>
+        /// <param name="pRowIndex"></param>
+        /// <param name="pColIndex"></param>
+        /// <param name="pColAbove"></param>
+        /// <param name="pColBelow"></param>
         public void GetColumn(int pRowIndex, int pColIndex, out Word pColAbove, out Word pColBelow)
         {
+            List<char> lstChars;
             //Go to top 
             int r = pRowIndex-1;
             while ((r >= 0) && (this.grid[r, pColIndex].Value != Letter.NoLetter))
@@ -180,7 +192,8 @@ namespace ScrabbleEngine
             }
             r++;
 
-            List<char> lstChars = new List<char>();
+            //Get word above
+            lstChars = new List<char>();
             for (int i = r; (i < pRowIndex); i++)
             {
                 lstChars.Add(this.grid[i, pColIndex].Value);
@@ -190,6 +203,7 @@ namespace ScrabbleEngine
             pColAbove.RowIndex = r;
             pColAbove.ColumnIndex = pColIndex;
 
+            //Get word below
             lstChars = new List<char>();
             for (int i = pRowIndex+1; (i < gridDimension) && (this.grid[i, pColIndex].Value != Letter.NoLetter); i++)
             {
@@ -201,8 +215,18 @@ namespace ScrabbleEngine
             pColBelow.ColumnIndex = pColIndex;
         }
 
+        /// <summary>
+        /// Gets words to left/right of specified square on a row
+        /// If no word, it will return Word with no value
+        /// This method DOES NOT check if the word is a valid word, or that the letter in each square is actually valid to be there!
+        /// </summary>
+        /// <param name="pRowIndex"></param>
+        /// <param name="pColIndex"></param>
+        /// <param name="pRowLeft"></param>
+        /// <param name="pRowRight"></param>
         public void GetRow(int pRowIndex, int pColIndex, out Word pRowLeft, out Word pRowRight)
         {
+            List<char> lstChars;
             //Go to left 
             int c = pColIndex-1;
             while ((c >= 0) && (this.grid[pRowIndex, c].Value != Letter.NoLetter))
@@ -211,7 +235,8 @@ namespace ScrabbleEngine
             }
             c++;
 
-            List<char> lstChars = new List<char>();
+            //Get word to left
+            lstChars = new List<char>();
             for (int i = c; (i < pColIndex); i++)
             {
                 lstChars.Add(this.grid[pRowIndex, i].Value);
@@ -221,8 +246,9 @@ namespace ScrabbleEngine
             pRowLeft.RowIndex = pRowIndex;
             pRowLeft.ColumnIndex = c;
 
+            //Get word to right
             lstChars = new List<char>();
-            for (int i = pColIndex + 1; (i < gridDimension) && (this.grid[pRowIndex, c].Value != Letter.NoLetter); i++)
+            for (int i = pColIndex + 1; (i < gridDimension) && (this.grid[pRowIndex, i].Value != Letter.NoLetter); i++)
             {
                 lstChars.Add(this.grid[pRowIndex, i].Value);
             }   
@@ -232,6 +258,24 @@ namespace ScrabbleEngine
             pRowRight.ColumnIndex = pColIndex + 1;
         }
 
+        public void RefreshBoard(ProgressBar pB)
+        {
+            int intProgressValue = 0;
+            pB.Value = 0;
+            pB.Maximum = gridDimension * gridDimension;
+
+            for (int r = 0; r < gridDimension; r++)
+            {
+                for (int c = 0; c < gridDimension; c++)
+                {
+                    if (grid[r, c].Value != Letter.NoLetter)
+                    {
+                        RefreshSquare(r, c);
+                    }
+                    pB.Value = intProgressValue++;
+                }
+            }
+        }
         public void RefreshSquare(int pRowIndex, int pColIndex)
         {
             GetColumn(pRowIndex, pColIndex, out Word pColAbove, out Word pColBelow);
