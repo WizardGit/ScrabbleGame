@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace ScrabbleEngine
 {
@@ -304,155 +305,82 @@ namespace ScrabbleEngine
                 }
             }
         }
+        
+        /// <summary>
+        /// Checks board for words that aren't valid scrabble words!
+        /// </summary>
+        /// <param name="pWrongWord"></param>
+        /// <returns></returns>
         public bool CheckPlayedWords(out string pWrongWord)
         {
             for (int r = 0; r < gridDimension; r++)
             {
                 for (int c = 0; c < gridDimension; c++)
                 {
-                    if (GetWord(this, r, c, out Word pColWord, out Word pRowWord) == true)
+                    if (grid[r, c].Value != Letter.NoLetter)
                     {
-                        if ((pColWord.Value != "") && (dict.CheckWord(pColWord.Value) == false))
+                        //If false, we have empty square, so just continue on, no need to check anything
+                        if (GetWord(r, c, out Word pColWord, out Word pRowWord) == true)
                         {
-                            pWrongWord = pColWord.Value;
-                            return false;
-                        }
-                        else if ((pRowWord.Value != "") && (dict.CheckWord(pRowWord.Value) == false))
-                        {
-                            pWrongWord = pRowWord.Value;
-                            return false;
+                            if ((pColWord.Length <= 1) && (pRowWord.Length <= 1))
+                            {
+                                //If both are 1 or less, that means that they are both just the square value, in which case, just return one and return false;
+                                pWrongWord = pColWord.Value;
+                                return false;
+                            }
+                            else if ((pColWord.Length > 1) && (dict.CheckWord(pColWord.Value) == false))
+                            {
+                                pWrongWord = pColWord.Value;
+                                return false;
+                            }
+                            else if ((pRowWord.Length > 1) && (dict.CheckWord(pRowWord.Value) == false))
+                            {
+                                pWrongWord = pRowWord.Value;
+                                return false;
+                            }
                         }
                     }
                 }
             }
             pWrongWord = "";
             return true;
-        } 
+        }
 
         /// <summary>
-        /// If the specified value at the pRowIndex and pColIndex is part of a column and/or a row word, returns those words
+        /// Returns true if the square provided has a valid letter in it
+        /// Does not guarantee that the word returned actually are valid words...
         /// </summary>
-        /// <param name="pBoard"></param>
         /// <param name="pRowIndex"></param>
         /// <param name="pColIndex"></param>
         /// <param name="pColWord"></param>
         /// <param name="pRowWord"></param>
-        /// <returns>True if it could at least get one column and/or row word</returns>
-        public bool GetWord(Board pBoard, int pRowIndex, int pColIndex, out Word pColWord, out Word pRowWord)
+        /// <returns></returns>
+        public bool GetWord(int pRowIndex, int pColIndex, out Word pColWord, out Word pRowWord)
         {
-            if (pBoard[pRowIndex, pColIndex].Value == Letter.NoLetter)
+            GetColumn(pRowIndex, pColIndex, out Word pColAbove, out Word pColBelow);
+            GetRow(pRowIndex, pColIndex, out Word pRowLeft, out Word pRowRight);
+            char theLetter = grid[pRowIndex, pColIndex].Value;
+
+            if ((theLetter == Letter.NoLetter) || (char.IsLetter(theLetter) == false))
             {
                 pColWord = new Word("");
                 pRowWord = new Word("");
                 return false;
             }
 
-            int origRow;
-            int origCol;
+            string colWord = pColAbove.Value + theLetter.ToString() + pColBelow.Value;
+            string rowWord = pRowLeft.Value + theLetter.ToString() + pRowRight.Value;
 
-            //Go to top of word 
-            int r = pRowIndex;
-            while ((r >= 0) && (pBoard[r, pColIndex].Value != Letter.NoLetter))
-            {
-                r--;
-            }
-            r++;
-
-            //Variables dictating where the top of the column word begins
-            origRow = r;
-            origCol = pColIndex;
-            List<char> lstChars = new List<char>();
-
-            //Start adding the letters from the complete word until we hit the bottom of the board or a non-letter character
-            for (int i = r; ((i < (gridDimension - 1)) && (pBoard[i, pColIndex].Value != Letter.NoLetter)); i++)
-            {
-                lstChars.Add(pBoard[i, pColIndex].Value);
-            }
-            // If we actually made a word, record that
-            if (lstChars.Count > 1)
-            {
-                pColWord = new Word(new string(lstChars.ToArray()));
-                pColWord.SetAsColumn();
-                pColWord.RowIndex = origRow;
-                pColWord.ColumnIndex = origCol;
-            }
-            else
-                pColWord = new Word("");
-
-            //Go to left of the word 
-            int c = pColIndex;
-            while ((c >= 0) && (pBoard[pRowIndex, c].Value != Letter.NoLetter))
-            {
-                c--;
-            }
-            c++;
-
-            //These variables hold where the word begins to the left
-            origRow = pRowIndex;
-            origCol = c;
-            lstChars = new List<char>();
-            for (int i = c; ((i < (gridDimension - 1)) && (pBoard[pRowIndex, i].Value != Letter.NoLetter)); i++)
-            {
-                lstChars.Add(pBoard[pRowIndex, i].Value);
-            }
-            if (lstChars.Count > 1)
-            {
-                pRowWord = new Word(new string(lstChars.ToArray()));
-                pRowWord.SetAsRow();
-                pRowWord.RowIndex = origRow;
-                pRowWord.ColumnIndex = origCol;
-            }
-            else
-                pRowWord = new Word("");
-
-            if ((pRowWord.Value == "") && (pColWord.Value == ""))
-                return false;
-            else
-                return true;
-        }
-
-        /// <summary>
-        /// Compares pBoard against this.grid to find new words on pBoard.  
-        /// </summary>
-        /// <param name="pBoard"></param>
-        /// <returns>Returns list of new words on board</returns>
-        /// <exception cref="Exception">Square that was different but no new words there...???</exception>
-        public List<Word> GetNewWord(Board pBoard)
-        {
-            List<Word> lstWords = new List<Word>();
-
-            for (int r = 0; r < gridDimension; r++)
-            {
-                for (int c = 0; c < gridDimension; c++)
-                {
-                    if (grid[r, c].Value != pBoard[r,c].Value)
-                    {
-                        if (GetWord(pBoard, r, c, out Word pColWord, out Word pRowWord) == true)
-                        {
-                            if (pColWord.Value != "")
-                                pColWord.AddToList(ref lstWords, true);
-                            if (pRowWord.Value != "")
-                                pRowWord.AddToList(ref lstWords, true);
-                        }
-                        else
-                        {
-                            throw new Exception("There is a wrong word on the board!");
-                        }                        
-                    }
-                }
-            }
-
-            List<Word> results = new List<Word>();
-
-            //We got a ton of results, so we need to filter out duplicate results
-            foreach (Word word in lstWords)
-            {
-                if (word.InList(results) == false)
-                    results.Add(word);
-            }
-
-            return results;
-        }
+            pColWord = new Word(colWord);
+            pColWord.RowIndex = pColAbove.RowIndex;
+            pColWord.ColumnIndex = pColAbove.ColumnIndex;
+            pColWord.SetAsColumn();
+            pRowWord = new Word(rowWord);
+            pRowWord.RowIndex = pRowLeft.RowIndex;
+            pRowWord.ColumnIndex = pRowLeft.ColumnIndex;
+            pRowWord.SetAsRow();
+            return true;
+        }        
 
         /// <summary>
         /// Returns pLstStrWords (List of List of words) of all possible words to be played at rowIndex row.
@@ -554,6 +482,8 @@ namespace ScrabbleEngine
         /// <returns></returns>
         public bool RemoveLetter(char pcharLetter, ref string pstrLetters)
         {
+            if ((pstrLetters.Length <= 0) || ((char.IsLetter(pcharLetter) == false) && (pcharLetter != Letter.AnyLetter)))
+                return false;
             char[] charListLetters = pstrLetters.ToCharArray();
 
             for (int i = 0; i < pstrLetters.Length; i++)

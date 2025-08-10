@@ -305,6 +305,57 @@ namespace ScrabbleEngine
             }
         }
 
+        /// <summary>
+        /// Compares pBoard against this.grid to find new words on pBoard.  
+        /// Unless specified, this method assumes all words on board are valid
+        /// </summary>
+        /// <param name="pBoard"></param>
+        /// <returns>Returns list of new words on board</returns>
+        /// <exception cref="Exception">Square that was different but no new words there...???</exception>
+        public List<Word> GetNewWord(Board pOldBoard, Board pNewBoard, bool pVerifyFirst = false)
+        {
+            if (pVerifyFirst == true)
+            {
+                throw new Exception("Board has at least one incorrectly played word on it!");
+            }
+
+            List<Word> lstWords = new List<Word>();
+
+            for (int r = 0; r < pOldBoard.GridDimension; r++)
+            {
+                for (int c = 0; c < pOldBoard.GridDimension; c++)
+                {
+                    if (pOldBoard[r, c].Value != pNewBoard[r, c].Value)
+                    {
+                        if (pNewBoard.GetWord(r, c, out Word pColWord, out Word pRowWord) == true)
+                        {
+                            //GetWord will just return any letters consecutively.
+                            //If we get no word or the word is just one letter, ignore it, we (should have anyway) validated that we don't have any bad words in play
+                            if ((pColWord.Value != "") && (pColWord.Length > 1))
+                                pColWord.AddToList(ref lstWords, true);
+                            if ((pRowWord.Value != "") && (pRowWord.Length > 1))
+                                pRowWord.AddToList(ref lstWords, true);
+                        }
+                        else
+                        {
+                            throw new Exception("There is a wrong word on the board!");
+                        }
+                    }
+                }
+            }
+
+            List<Word> results = new List<Word>();
+
+            //We got a ton of results, so we need to filter out duplicate results
+            foreach (Word word in lstWords)
+            {
+                if (word.InList(results) == false)
+                    results.Add(word);
+            }
+
+            return results;
+        }
+
         private void CalcNewWordBtn_Click(object sender, EventArgs e)
         {
             int multiplicationFactor = 1;
@@ -324,7 +375,7 @@ namespace ScrabbleEngine
             }
 
             Board charBoard = new Board(GetTableLayoutPanelBoard());
-            List<Word> newWords = dataBoard.GetNewWord(charBoard);
+            List<Word> newWords = GetNewWord(charBoard, dataBoard);
 
             foreach (Word newWord in newWords)
             {

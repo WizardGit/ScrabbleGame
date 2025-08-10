@@ -1,9 +1,13 @@
 ﻿
 namespace ScrabbleEngine
 {
+    /// <summary>
+    /// Utilizes a DAWG (directed acylic word graph for searches if you use the checkword method
+    /// </summary>
     public class Dictionary
     {
         private List<string> dictionary;
+        private DAWG dictDawg;
 
         public int Length
         {
@@ -14,10 +18,12 @@ namespace ScrabbleEngine
         {
             get { return dictionary; }
         }
-        public Dictionary()
+        public Dictionary(bool pBuildDawg = false)
         {
             string filePath = "ScrabbleWords.txt";
             dictionary = new List<string>();
+            if (pBuildDawg == true)
+                dictDawg = new DAWG(filePath);
 
             if (!File.Exists(filePath))
             {
@@ -43,6 +49,16 @@ namespace ScrabbleEngine
         public Word GetWord(int index)
         {
             return new Word(this.dictionary[index]);
+        }
+
+        /// <summary>
+        /// Needs testing
+        /// </summary>
+        /// <param name="pWord"></param>
+        /// <returns></returns>
+        public bool CheckWordFast(string pWord)
+        {
+            return dictDawg.Search(pWord);
         }
 
         public bool CheckWord(string pWord)
