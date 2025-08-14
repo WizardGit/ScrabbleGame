@@ -72,5 +72,22 @@ namespace ScrabbleEngine
             }
             return false;
         }
+
+        /// <summary>
+        /// Case Sensitive! Checks if pWord is found somewhere within a word in the dictionary
+        /// </summary>
+        /// <param name="pWord"></param>
+        /// <returns></returns>
+        public bool CheckWordIn(string pWord)
+        {
+            foreach (string word in dictionary)
+            {
+                if (word.Contains(pWord) == true)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

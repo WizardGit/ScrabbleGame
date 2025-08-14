@@ -323,5 +323,38 @@ namespace ScrabbleTests
             Assert.AreEqual("cardt", wrongWord);
 
         }
+
+        [TestMethod]
+        public void TestRefreshSquare()
+        {
+            Board board1 = new Board(); 
+            board1[7, 6].Value = 'b';
+            board1[7, 7].Value = 'e';
+            board1[7, 8].Value = 'a';
+            board1[7, 9].Value = 'd';
+            board1[4, 9].Value = 'c';
+            board1[5, 9].Value = 'a';
+            board1[6, 9].Value = 'r';
+
+            //Test Refreshing each square
+            board1.RefreshSquare(7, 10);
+            Assert.AreEqual(16, board1[7, 10].ValidValues.Count);
+            board1.RefreshSquare(8, 9);
+            Assert.AreEqual(17, board1[8, 9].ValidValues.Count);
+
+            board1 = new Board();
+            board1[7, 6].Value = 'b';
+            board1[7, 7].Value = 'e';
+            board1[7, 8].Value = 'a';
+            board1[7, 9].Value = 'd';
+            board1[4, 9].Value = 'c';
+            board1[5, 9].Value = 'a';
+            board1[6, 9].Value = 'r';
+
+            //Test refreshing entire board
+            board1.RefreshBoard(null);
+            Assert.AreEqual(16, board1[7, 10].ValidValues.Count);
+            Assert.AreEqual(17, board1[8, 9].ValidValues.Count);
+        }
     }
 }

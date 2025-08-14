@@ -259,47 +259,66 @@ namespace ScrabbleEngine
             pRowRight.ColumnIndex = pColIndex + 1;
         }
 
+        /// <summary>
+        /// Removes any letters on empty squares that can't be played on the square due to the resulting word being invalid
+        /// </summary>
+        /// <param name="pB">OK to be a null value</param>
         public void RefreshBoard(ProgressBar pB)
         {
             int intProgressValue = 0;
-            pB.Value = 0;
-            pB.Maximum = gridDimension * gridDimension;
+            if (pB != null)
+            {                
+                pB.Value = 0;
+                pB.Maximum = gridDimension * gridDimension;
+            }
 
             for (int r = 0; r < gridDimension; r++)
             {
                 for (int c = 0; c < gridDimension; c++)
                 {
-                    if (grid[r, c].Value != Letter.NoLetter)
+                    if (grid[r, c].Value == Letter.NoLetter)
                     {
                         RefreshSquare(r, c);
                     }
-                    pB.Value = intProgressValue++;
+                    if (pB != null)
+                        pB.Value = intProgressValue++;
                 }
             }
         }
+        
+        /// <summary>
+        /// Removes any letters that can't be played on the square due to the resulting word being invalid
+        /// </summary>
+        /// <param name="pRowIndex"></param>
+        /// <param name="pColIndex"></param>
         public void RefreshSquare(int pRowIndex, int pColIndex)
         {
             GetColumn(pRowIndex, pColIndex, out Word pColAbove, out Word pColBelow);
             GetRow(pRowIndex, pColIndex, out Word pRowLeft, out Word pRowRight);
            
             Square square = grid[pRowIndex, pColIndex];
+
+            //This is a copy of the valid values of the square
             List<Letter> valchars = square.ValidValues;
 
             //Check Column
             for(int i = 0; i < valchars.Count; i++)
             {
-                string catWord = pColAbove.Value + square.ValidValues[i].Value + pColBelow;
-                if ((catWord.Length > 2) && (dict.CheckWord(catWord) == false))
+                string catWord = pColAbove.Value + square.ValidValues[i].Value + pColBelow.Value;
+                if ((catWord.Length > 2) && (dict.CheckWordIn(catWord) == false))
                 {
                     square.RemoveLetter(valchars[i]);
                 }
             }
+            //We may have removed some of the letters from the square's valid characters, so now recopy the valid values that weren't eliminated
+            valchars = square.ValidValues;
 
             // Check Row
             for (int i = 0; i < valchars.Count; i++)
             {
-                string catWord = pRowLeft.Value + square.ValidValues[i].Value + pRowRight;
-                if ((catWord.Length > 2) && (dict.CheckWord(catWord) == false))
+                string catWord = pRowLeft.Value + square.ValidValues[i].Value + pRowRight.Value;
+                //We only want to remove that letter if no combination can possibly be or fit into a dictionary word
+                if ((catWord.Length > 2) && (dict.CheckWordIn(catWord) == false))
                 {
                     square.RemoveLetter(valchars[i]);
                 }
