@@ -56,9 +56,9 @@ namespace ScrabbleEngine
         /// Sets the letter letter of our Square, if our letter is empty, it will reset the square letter and validValues list
         /// </summary>
         /// <param name="pCharLetter"></param>
-        public void SetLetter(char pCharLetter, bool isWildCardLetter = false)
+        public void SetLetter(char pCharLetter, bool isAnyLetter = false)
         {
-            if (isWildCardLetter == true)
+            if (isAnyLetter == true)
                 Any = true;
 
             this.letter = new Letter(pCharLetter);
@@ -97,15 +97,41 @@ namespace ScrabbleEngine
                 validValues.Add(new Letter('z'));
             }            
         }
+        /// <summary>
+        /// Returns if the pLetter is in our list of valid values
+        /// </summary>
+        /// <param name="pLetter">char letter</param>
+        /// <returns></returns>
         public bool IsValid(char pLetter)
         {
+            if (pLetter == Letter.NoLetter)
+            {
+                if (validValues.Count > 0)
+                    return false;
+                else
+                    return true;
+            }
+            else if (pLetter == Letter.AnyLetter)
+            {
+                if (validValues.Count > 0)
+                    return true;
+                else
+                    return false;
+            }
+
             foreach (Letter l in this.validValues)
             {
                 if (l.Value == pLetter)
                     return true;
             }
+
             return false;
         }
+        /// <summary>
+        /// Removes the specified letter (value) from our valid vales list
+        /// </summary>
+        /// <param name="pLetter"></param>
+        /// <returns></returns>
         public bool RemoveLetter(Letter pLetter)
         {
             Letter? match = validValues.Find(p => p.Value == pLetter.Value);

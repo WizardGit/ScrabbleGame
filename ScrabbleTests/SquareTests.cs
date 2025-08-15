@@ -36,5 +36,25 @@ namespace ScrabbleTests
             Assert.AreEqual(1, square.Points(ref multFactor));
             Assert.AreEqual(2, multFactor);
         }
+
+        [TestMethod]
+        public void TestRandomPoints()
+        {
+            Square square = new Square();
+
+            Letter letter = new Letter('b');
+            Assert.AreEqual(true, square.RemoveLetter(letter));
+            Assert.AreEqual(false, square.IsValid('b'));
+            Assert.AreEqual(true, square.IsValid('a'));
+            letter = new Letter('a');
+            Assert.AreEqual(true, square.RemoveLetter(letter));
+            Assert.AreEqual(false, square.IsValid('a'));
+            Assert.AreEqual(true, square.IsValid('*'));
+            Assert.AreEqual(false, square.IsValid('-'));
+            Assert.AreEqual(false, square.RemoveLetter(letter));
+            letter = new Letter('*');
+            Assert.AreEqual(false, square.RemoveLetter(letter));
+
+        }
     }
 }
