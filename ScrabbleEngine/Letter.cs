@@ -11,59 +11,65 @@ namespace ScrabbleEngine
 
         public Letter(char pCharValue)
         {
-            this.value = pCharValue;
-            
-            switch(pCharValue)
-            {
-                case 'a':
-                case 'e':
-                case 'i':
-                case 'o':
-                case 'u':
-                case 'l':
-                case 'n':
-                case 's':
-                case 't':
-                case 'r':
-                    this.points = 1;
-                    break;
-                case 'd':
-                case 'g':
-                    this.points = 2;
-                    break;
-                case 'b':
-                case 'c':
-                case 'm':
-                case 'p':
-                    this.points = 3;
-                    break;
-                case 'f':
-                case 'h':
-                case 'v':
-                case 'w':
-                case 'y':
-                    this.points = 4;
-                    break;
-                case 'k':
-                    this.points = 5;
-                    break;
-                case 'j':
-                case 'x':
-                    this.points = 8;
-                    break;
-                case 'z':
-                    this.points = 10;
-                    break;
-                default:
-                    this.points = 0;
-                    break;
-            }
+            Value = pCharValue;
         }
 
         public char Value
         {
-            get { return value; }
-            set { this.value = value; }
+            get { return this.value; }
+            set
+            {
+                if ((char.IsLetter(value) == true) || (value == Letter.NoLetter) || (value == Letter.AnyLetter))
+                    this.value = char.ToLower(value);
+                else
+                    throw new Exception("Value you are setting letter to is not a valid Letter!");
+
+                switch (this.value)
+                {
+                    case 'a':
+                    case 'e':
+                    case 'i':
+                    case 'o':
+                    case 'u':
+                    case 'l':
+                    case 'n':
+                    case 's':
+                    case 't':
+                    case 'r':
+                        Points = 1;
+                        break;
+                    case 'd':
+                    case 'g':
+                        Points = 2;
+                        break;
+                    case 'b':
+                    case 'c':
+                    case 'm':
+                    case 'p':
+                        Points = 3;
+                        break;
+                    case 'f':
+                    case 'h':
+                    case 'v':
+                    case 'w':
+                    case 'y':
+                        Points = 4;
+                        break;
+                    case 'k':
+                        Points = 5;
+                        break;
+                    case 'j':
+                    case 'x':
+                        Points = 8;
+                        break;
+                    case 'z':
+                        Points = 10;
+                        break;
+                    default:
+                        Points = 0;
+                        break;
+                }
+            }
         }
 
         public int Points

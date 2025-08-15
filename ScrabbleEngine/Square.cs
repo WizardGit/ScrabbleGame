@@ -12,12 +12,13 @@ namespace ScrabbleEngine
             tripleWord
         }
 
-        private char value;
+        private Letter letter;
         private List<Letter> validValues;
         private BonusType bonusType;
+        private bool anyLetter;
         public char Value
         {
-            get { return value; }
+            get { return letter.Value; }
             set 
             {
                 SetLetter(value);
@@ -34,6 +35,12 @@ namespace ScrabbleEngine
             get { return this.validValues; }
         }
 
+        public bool Any
+        {
+            get { return this.anyLetter; }
+            set { this.anyLetter = value; }
+        }
+
         public Square(BonusType pBonusType = BonusType.nothing, char pstrValue = Letter.NoLetter) 
         {
             if (pBonusType != BonusType.nothing)
@@ -46,15 +53,19 @@ namespace ScrabbleEngine
         } 
 
         /// <summary>
-        /// Sets the letter value of our Square, if our letter is empty, it will reset the square value and validValues list
+        /// Sets the letter letter of our Square, if our letter is empty, it will reset the square letter and validValues list
         /// </summary>
         /// <param name="pCharLetter"></param>
-        public void SetLetter(char pCharLetter)
+        public void SetLetter(char pCharLetter, bool isWildCardLetter = false)
         {
-            validValues = new List<Letter>();
+            if (isWildCardLetter == true)
+                Any = true;
+
+            this.letter = new Letter(pCharLetter);
+            validValues = new List<Letter>();            
             if (pCharLetter != Letter.NoLetter)
             {
-                validValues.Add(new Letter(pCharLetter));
+                validValues.Add(this.letter);
             }
             else
             {
@@ -84,8 +95,7 @@ namespace ScrabbleEngine
                 validValues.Add(new Letter('x'));
                 validValues.Add(new Letter('y'));
                 validValues.Add(new Letter('z'));
-            }
-            this.value = pCharLetter;
+            }            
         }
         public bool IsValid(char pLetter)
         {
@@ -96,14 +106,6 @@ namespace ScrabbleEngine
             }
             return false;
         }
-        public bool RemoveLetter(char pLetter = '-')
-        {
-            Letter? match = validValues.Find(p => p.Value == pLetter);
-            if(match == null) 
-                return false;
-            else
-                return validValues.Remove(match);
-        }
         public bool RemoveLetter(Letter pLetter)
         {
             Letter? match = validValues.Find(p => p.Value == pLetter.Value);
@@ -113,10 +115,23 @@ namespace ScrabbleEngine
                 return validValues.Remove(match);
         }      
         
-        public int CalculatePoints(ref int multiplicationFactor)
+        /// <summary>
+        /// Returns total points on square + the parameter has a multiplication factor for the word that it is part of
+        /// </summary>
+        /// <param name="multiplicationFactor">The word multiplication factor (none/double/triple word score)</param>
+        /// <returns>points for letter</returns>
+        public int Points(ref int multiplicationFactor)
         {
-            int score = this.validValues[0].Points;
-            switch(this.bonusType)
+            int score;
+
+            if (letter.Value == Letter.NoLetter)
+                throw new Exception("Can't calculate points on empty letter");
+            else if (Any == true)
+                score = 0;
+            else
+                score = letter.Points;
+
+            switch (Bonus)
             {
                 case BonusType.doubleLetter:
                     score *= 2;

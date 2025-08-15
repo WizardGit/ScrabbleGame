@@ -10,7 +10,7 @@ using System.Diagnostics;
  *   duplicate that for the column check functionality
  *   change up the more front end methods to handle lists of lists and properly display that
  *   sort is broken because of listlistword
- *   
+ *   we need to be able to handle if our letter is an empty square   
  * 
  * NOTE: with wildcard letters, it's gonna mark a letter not in the list of letters as used and then say the word is playable
  * once the word is played, it looks like a wildcard letter wasn't used, but it was.  For now, we're gonna do it ths way
@@ -404,14 +404,14 @@ namespace ScrabbleEngine
                 {
                     for (int i = 0; i < newWord.Value.Length; i++)
                     {
-                        finalScore += dataBoard[rowIndex + i, colIndex].CalculatePoints(ref multiplicationFactor);
+                        finalScore += dataBoard[rowIndex + i, colIndex].Points(ref multiplicationFactor);
                     }
                 }
                 else if (isRow == true)
                 {
                     for (int i = 0; i < newWord.Value.Length; i++)
                     {
-                        finalScore += dataBoard[rowIndex, colIndex + i].CalculatePoints(ref multiplicationFactor);
+                        finalScore += dataBoard[rowIndex, colIndex + i].Points(ref multiplicationFactor);
                     }
                 }
                 else

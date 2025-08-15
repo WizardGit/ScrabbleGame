@@ -1,7 +1,6 @@
 ﻿
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace ScrabbleEngine
 {
@@ -175,7 +174,7 @@ namespace ScrabbleEngine
                 
         /// <summary>
         /// Gets words above/below of specified square on column
-        /// If no word, it will return Word with no value
+        /// If no word, it will return Word with no letter
         /// This method DOES NOT check if the word is a valid word, or that the letter in each square is actually valid to be there!
         /// </summary>
         /// <param name="pRowIndex"></param>
@@ -218,7 +217,7 @@ namespace ScrabbleEngine
 
         /// <summary>
         /// Gets words to left/right of specified square on a row
-        /// If no word, it will return Word with no value
+        /// If no word, it will return Word with no letter
         /// This method DOES NOT check if the word is a valid word, or that the letter in each square is actually valid to be there!
         /// </summary>
         /// <param name="pRowIndex"></param>
@@ -262,7 +261,7 @@ namespace ScrabbleEngine
         /// <summary>
         /// Removes any letters on empty squares that can't be played on the square due to the resulting word being invalid
         /// </summary>
-        /// <param name="pB">OK to be a null value</param>
+        /// <param name="pB">OK to be a null letter</param>
         public void RefreshBoard(ProgressBar pB)
         {
             int intProgressValue = 0;
@@ -343,7 +342,7 @@ namespace ScrabbleEngine
                         {
                             if ((pColWord.Length <= 1) && (pRowWord.Length <= 1))
                             {
-                                //If both are 1 or less, that means that they are both just the square value, in which case, just return one and return false;
+                                //If both are 1 or less, that means that they are both just the square letter, in which case, just return one and return false;
                                 pWrongWord = pColWord.Value;
                                 return false;
                             }
