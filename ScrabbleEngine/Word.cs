@@ -54,6 +54,11 @@ namespace ScrabbleEngine
             }
             CalculatePoints();
         }
+        public char this[int index]
+        {
+            get { return this.letterList[index].Value; }
+            set { this.letterList[index].Value = value; }
+        }
 
         public void SetAsRow()
         {
@@ -86,36 +91,35 @@ namespace ScrabbleEngine
             return false;
         }
 
-        public string PrintWord()
+        public string PrintWord(bool pblnPoints, bool pblnIndex)
         {
-            return this.value;
+            string strResults = this.value;            
+
+            if (pblnIndex == true)
+            {
+                strResults += " [";
+                if (this.rowIndex > -1)
+                {
+                    if (this.columnIndex > -1)
+                        strResults += this.rowIndex + ", ";
+                    else
+                        strResults += this.rowIndex;
+                }                
+
+                if (this.rowIndex > -1)
+                    strResults += this.columnIndex;
+                strResults += "]";
+            }            
+
+            if (pblnPoints == true)
+            {
+                strResults += " (" + this.points + ")";
+            }
+
+            return strResults;
         }
 
-        public string PrintWordPoints()
-        {
-            return this.value + " (" + this.points + ")";
-        }
-
-        public string PrintWordIndex()
-        {
-            return this.value + " [" + this.rowIndex + ", " + this.columnIndex + "]";
-        }
         
-        public string PrintWordIndexPoints()
-        {
-            string result = this.value + " [";
-            if (this.rowIndex > -1)
-                result += this.rowIndex + ", ";
-            result += this.columnIndex + "]" + " (" + this.points + ")";
-
-            return result;
-        }
-
-        public char this[int index]
-        {
-            get { return this.letterList[index].Value; }
-            set { this.letterList[index].Value = value; }
-        }
         public void AddToList(ref List<Word> pLstWords, bool pCheckIndex = false)
         {
             foreach (Word word in pLstWords)
@@ -177,49 +181,6 @@ namespace ScrabbleEngine
             return false;
         }
 
-        public bool WordMatchMask(int pintStartIndex, string pstrMask, string pstrLetters, bool pblnMustHitMask)
-        {
-            bool blnHitMask;
-            if (pblnMustHitMask == true)
-                blnHitMask = false;
-            else
-                blnHitMask = true;
-
-            if ((pstrMask.Length < this.Length) || ((pstrMask.Length - pintStartIndex) < this.Length))
-                return false;
-
-            Word wrdMask = new Word(pstrMask);
-
-            //We can't count words if there is a letter before it for same reason as letters after word (see below comment)
-            if ((pintStartIndex - 1 >= 0) && (wrdMask[pintStartIndex - 1] != Letter.NoLetter) )
-            {
-                return false;
-            }
-
-            int c = pintStartIndex;
-            for (int i = pintStartIndex, j = 0; (i < pstrMask.Length) && (j < this.Length); i++, j++, c++)
-            {
-                if (wrdMask[i] == Letter.NoLetter)
-                {
-                    if (RemoveLetter(this[j], ref pstrLetters) == false)
-                        return false;
-                }
-                else
-                {
-                    if (wrdMask[i] != this[j])
-                        return false;
-                    else
-                        blnHitMask = true;
-                }
-            }
-            //We need to check to make sure our word doesn't end right next to another letter - otherwise the word can't be played
-            //If that letter can still be combined to make a different word, we'll catch that case letter as we move through the dictionary
-            if ((c != pstrMask.Length) && (wrdMask[c] != Letter.NoLetter))
-                return false;
-            else
-                return blnHitMask;
-        }
-
         public bool OneLetterUsed(string pstrLetters)
         {
             for (int i = 0; i < pstrLetters.Length; i++)
@@ -228,7 +189,7 @@ namespace ScrabbleEngine
                     return true;
             }
             return false;
-        }
+        }        
 
         public bool WordMatchMask(int pintStartIndex, Line pLine, string pstrLetters, bool pblnMustHitMask = true, bool pblnMustMatchLength = false)
         {

@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.VisualBasic.Devices;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
@@ -87,6 +88,10 @@ namespace ScrabbleEngine
             get { return this.grid[row, column]; }
         }
 
+        /// <summary>
+        /// Checks if Board is Empty
+        /// </summary>
+        /// <returns></returns>
         public bool IsEmpty()
         {
             for (int r = 0; r < gridDimension; r++)
@@ -107,7 +112,7 @@ namespace ScrabbleEngine
             List<List<Word>> possibleWordList = new List<List<Word>>();
             if (IsEmpty() == true)
             {
-                Line simpleLine = new Line();
+                Line simpleLine = new Line("-------");
                 simpleLine.SimpleLineCheck(pstrLetters, out List<Word> pSimpleWordList, pb);
                 possibleWordList.Add(pSimpleWordList);
             }
@@ -323,12 +328,13 @@ namespace ScrabbleEngine
                 }
             }
         }
-        
+
         /// <summary>
         /// Checks board for words that aren't valid scrabble words!
+        /// Returns True if all words are valid - false if not
         /// </summary>
-        /// <param name="pWrongWord"></param>
-        /// <returns></returns>
+        /// <param name="pWrongWord">First wrong word found</param>
+        /// <returns>True if all words are valid - false if not</returns>
         public bool CheckPlayedWords(out string pWrongWord)
         {
             for (int r = 0; r < gridDimension; r++)
@@ -535,10 +541,10 @@ namespace ScrabbleEngine
         /// <param name="pColIndex"></param>
         /// <param name="wordsMade">List of words of all words completed</param>
         /// <returns>All possible words made, if the scrabble word can be played at the position</returns>
-        public bool WordMatchRow(string pScrabbleWord, string pstrLetters, int pRowIndex, int pColIndex, out List<Word> wordsMade)
+        public bool WordMatchRow(string pScrabbleWord, string pstrLetters, int pRowIndex, int pColIndex, out List<Word> wordsMade, bool pblnMustHitMask = true)
         {
             //are one of the letters for our scrabble word one that is already played that we're playing off
-            bool blnHitMask = false;
+            bool blnHitMask = !pblnMustHitMask;
             wordsMade = new List<Word>();
 
             // If our scrabble word is longer than spaces we have, return false
@@ -765,6 +771,55 @@ namespace ScrabbleEngine
                     }
                 }
             }
+        }
+
+        public int CalculateWordPoints(Word word)
+        {
+            //Calculate its points
+            int colIndex = word.ColumnIndex;
+            int rowIndex = word.RowIndex;
+            bool isColumn = word.isColumn;
+            bool isRow = word.isRow;
+
+            if ((rowIndex < 0) || 
+                (colIndex < 0) || 
+                ((isRow == false) && (isColumn == false)) || 
+                ((isRow == true) && (isColumn == true)))
+            {
+                throw new Exception("Can't calculate the word's points because it's missing a positioning parameter");
+            }
+
+            int resPoints = 0;
+            int multiplicationFactor = 1;
+
+            if (word.isRow == true)
+            {
+                for (int c = 0; c < word.Length; c++)
+                {
+                    if ((colIndex + c) > gridDimension)
+                    {
+                        throw new Exception("Word is longer than the grid's column dimension!");
+                    }
+
+                    resPoints += grid[rowIndex, colIndex + c].Points(ref multiplicationFactor);
+                }
+            }
+            else // (word.isColumn == true
+            {
+                for (int r = 0; r < word.Length; r++)
+                {
+                    if ((rowIndex + r) > gridDimension)
+                    {
+                        throw new Exception("Word is longer than the grid's row dimension!");
+                    }
+
+                    resPoints += grid[rowIndex + r, colIndex].Points(ref multiplicationFactor);
+                }
+            }
+
+            resPoints *= multiplicationFactor;
+
+            return resPoints;
         }
     }
 }

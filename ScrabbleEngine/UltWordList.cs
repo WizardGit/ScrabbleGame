@@ -2,7 +2,12 @@
 {
     internal class UltWordList
     {
-        private List<List<Word>> wordList;     
+        private List<List<Word>> wordList;  
+        
+        public int Length
+        {
+            get { return wordList.Count; }
+        }
 
         public List<List<Word>> GetWordList()
         {
@@ -14,14 +19,42 @@
             this.wordList = wordList;
         }
 
-        public UltWordList(List<Word> wordList)
+        public UltWordList(List<List<Word>> pWordList, bool pblnSpread)
+        {   
+            if (pblnSpread == true)
+            {
+                this.wordList = new List<List<Word>>();
+                List<Word> wordList = pWordList[0];
+
+                foreach (Word word in wordList)
+                {
+                    List<Word> words = new List<Word>();
+                    words.Add(word);
+                    this.wordList.Add(words);
+                }
+            }
+            else
+            {
+                this.wordList = pWordList;
+            }            
+        }
+
+        public UltWordList(List<Word> wordList, bool pblnSpread)
         {
             this.wordList = new List<List<Word>>();
-            foreach (Word word in wordList)
+
+            if (pblnSpread == true)
             {
-                List<Word> words = new List<Word>();
-                words.Add(word);
-                this.wordList.Add(words);
+                foreach (Word word in wordList)
+                {
+                    List<Word> words = new List<Word>();
+                    words.Add(word);
+                    this.wordList.Add(words);
+                }
+            }
+            else
+            {
+                this.wordList.Add(wordList);
             }
         }
 
@@ -30,45 +63,39 @@
             wordList = new List<List<Word>>();
         }
 
-        public List<string> ConvertToStringList()
-        {
-            List<string> resList = new List<string>();            
-
-            for (int i = 0; i < wordList.Count(); i++)
-            {
-                resList.Add(PrintWordListAt(i) + " " + PointsAt(i));
-            }
-
-            return resList;
-        }
-
-
-        public string PrintWordListAt(int pIndex)
+        public string PrintWordListAt(int pIndex, bool pblnPoints, bool pblnIndex)
         {
             string strResult = "";
 
-            foreach (Word word in wordList[pIndex])
+            List<Word> theWordList = wordList[pIndex];
+
+            for (int i = 0; i < theWordList.Count; i++)
             {
-                strResult += word.PrintWordIndexPoints() + " ";
+                Word word = theWordList[i];
+                strResult += word.PrintWord(pblnPoints, pblnIndex);
+                if (i < (theWordList.Count - 1))
+                {
+                    strResult += " & ";
+                }
             }
 
             return strResult;
         }
 
-        public int PointsAt(int pIndex)
+        public int PointsAt(int pIndex, Board pBoard)
         {
             int intResult = 0;
 
             foreach (Word word in wordList[pIndex])
             {
-                intResult += word.Points;
+                intResult += pBoard.CalculateWordPoints(word);
             }
 
             return intResult;
         }
 
         // I don't understand what this is doing...
-        public void SortPoints(bool pAscending)
+        public void SortPoints(bool pAscending, Board pBoard)
         {
             // Precompute index + points for each word
             var indexedPoints = wordList
@@ -76,7 +103,7 @@
                 {
                     Word = word,
                     Index = index,
-                    Points = PointsAt(index)
+                    Points = PointsAt(index, pBoard)
                 })
                 .ToList();
 
@@ -88,7 +115,7 @@
                     : b.Points.CompareTo(a.Points);  // Descending
             });
 
-            // Rebuild the sorted wordList
+            // Rebuild the sorted pWordList
             wordList = indexedPoints.Select(x => x.Word).ToList();
         }
     }

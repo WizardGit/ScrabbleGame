@@ -109,7 +109,7 @@ namespace ScrabbleEngine
             for (int j = 0; j < dictWords.Length; j++)
             {
                 Word scrabbleWord = dictWords.GetWord(j);
-                if (scrabbleWord.WordMatchMask(0, this, pstrLetters, false, true) == true)
+                if (scrabbleWord.WordMatchMask(0, this, pstrLetters, false, false) == true)
                 {
                     scrabbleWord.AddToList(ref pLstStrWords);
                 }

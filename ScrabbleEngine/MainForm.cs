@@ -1,4 +1,5 @@
 
+using Microsoft.VisualBasic.Devices;
 using System.Diagnostics;
 
 /*
@@ -181,7 +182,7 @@ namespace ScrabbleEngine
 
             foreach (Word word in pLstStrWords)
             {
-                DisplayListBox.Items.Add(word.PrintWordIndexPoints());
+                DisplayListBox.Items.Add(word.PrintWord(true, true));
             }
         }
 
@@ -199,7 +200,7 @@ namespace ScrabbleEngine
 
             foreach (Word word in pLstStrWords)
             {
-                DisplayListBox.Items.Add(word.PrintWordPoints());
+                DisplayListBox.Items.Add(word.PrintWord(true, false));
             }
         }
 
@@ -217,7 +218,7 @@ namespace ScrabbleEngine
             //lstWords.Sort((a, b) => b.Points.CompareTo(a.Points));
             foreach (Word word in lstWords)
             {
-                DisplayListBox.Items.Add(word.PrintWordIndexPoints());
+                DisplayListBox.Items.Add(word.PrintWord(true, true));
             }
         }
 
@@ -234,7 +235,7 @@ namespace ScrabbleEngine
 
             foreach (Word word in lstWords)
             {
-                DisplayListBox.Items.Add(word.PrintWordIndexPoints());
+                DisplayListBox.Items.Add(word.PrintWord(true, true));
             }
         }
 
@@ -270,27 +271,15 @@ namespace ScrabbleEngine
         private void ListWordsBtn_Click(object sender, EventArgs e)
         {
             string strLetters = LettersTextbox.Text.ToLower().Trim();
-            List<List<Word>> lstStrWords = dataBoard.BoardCheck(strLetters, ProgressBar);
-            lstLstWords = lstStrWords;
+
+            UltWordList ultWordList = new UltWordList(dataBoard.BoardCheck(strLetters, ProgressBar), true);
+
             DisplayListBox.Items.Clear();
 
-            foreach(List<Word> lstWords in lstStrWords)
+            for (int i = 0; i < ultWordList.Length; i++)
             {
-                string strBigWords = "";
-                int totalPoints = 0;
-
-                foreach (Word word in lstWords)
-                {
-                    strBigWords += word.PrintWordIndexPoints() + " ";
-                    totalPoints += word.Points;                    
-                }
-                DisplayListBox.Items.Add(strBigWords + " (" + totalPoints.ToString() + ")");
-            }            
-        }
-
-        private void RefreshValidBtn_Click(object sender, EventArgs e)
-        {
-            dataBoard.RefreshBoard(ProgressBar);
+                DisplayListBox.Items.Add(ultWordList.PrintWordListAt(i, true, true));
+            }         
         }
 
         private void ValidateWordsBtn_Click(object sender, EventArgs e)
@@ -358,8 +347,6 @@ namespace ScrabbleEngine
 
         private void CalcNewWordBtn_Click(object sender, EventArgs e)
         {
-            int multiplicationFactor = 1;
-
             if ((gridTableLayout.GetControlFromPosition(7, 7) is not TextBox tb) || 
                 (tb.Text.Length != 1) || 
                 (char.IsLetter(tb.Text[0]) == false))
@@ -367,62 +354,31 @@ namespace ScrabbleEngine
                 MessageBox.Show("There is no word on the middle space!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            else if (dataBoard.IsEmpty() == true)
+
+            Board charBoard = new Board(GetTableLayoutPanelBoard());
+
+            if (charBoard.CheckPlayedWords(out string pWrongWord) == false)
+            {
+                MessageBox.Show(pWrongWord + " is not valid!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            UltWordList ultWordList = new UltWordList(GetNewWord(dataBoard, charBoard), false);
+
+            int intResult = ultWordList.PointsAt(0, charBoard);
+            if (dataBoard.IsEmpty() == true)
             {
                 // First scrabble word gets automatic double word score
                 // It's impossible to hit any other word bonuses on the first word play
-                multiplicationFactor *= 2;
+                // Should only get hit once due to only being one word
+                intResult *= 2;
             }
 
-            Board charBoard = new Board(GetTableLayoutPanelBoard());
-            List<Word> newWords = GetNewWord(charBoard, dataBoard);
-
-            foreach (Word newWord in newWords)
-            {
-                if (newWord.Value == "")
-                {
-                    MessageBox.Show("New Word is not valid!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
-                int finalScore = 0;
-                //Validate that it is valid
-                Dictionary dict = new Dictionary();
-                if (dict.CheckWord(newWord.Value) == false)
-                {
-                    MessageBox.Show("New Word is not valid!", "Word Check", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-                //Calculate its points
-                int colIndex = newWord.ColumnIndex;
-                int rowIndex = newWord.RowIndex;
-                bool isColumn = newWord.isColumn;
-                bool isRow = newWord.isRow;
-
-
-                if (isColumn == true)
-                {
-                    for (int i = 0; i < newWord.Value.Length; i++)
-                    {
-                        finalScore += dataBoard[rowIndex + i, colIndex].Points(ref multiplicationFactor);
-                    }
-                }
-                else if (isRow == true)
-                {
-                    for (int i = 0; i < newWord.Value.Length; i++)
-                    {
-                        finalScore += dataBoard[rowIndex, colIndex + i].Points(ref multiplicationFactor);
-                    }
-                }
-                else
-                {
-                    throw new Exception("word isn't row or column!");
-                }
-                //Set the output fields
-                DisplayPointsLabel.Text = newWord.Value.ToString() + " scored " + (finalScore * multiplicationFactor).ToString() + " points!";
-            }            
+            //Set the output fields
+            DisplayPointsLabel.Text = ultWordList.PrintWordListAt(0, true, true);
 
             dataBoard.SyncTableLayoutPanelToBoard(gridTableLayout);
+            dataBoard.RefreshBoard(ProgressBar);
         }
 
         private void RefreshBoardBtn_Click(object sender, EventArgs e)

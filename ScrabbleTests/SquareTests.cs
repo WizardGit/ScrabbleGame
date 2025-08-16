@@ -1,5 +1,4 @@
 ﻿using ScrabbleEngine;
-using System.Diagnostics.Metrics;
 
 namespace ScrabbleTests
 {

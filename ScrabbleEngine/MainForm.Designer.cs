@@ -46,7 +46,6 @@
             SortComboBox = new ComboBox();
             ListWordsBtn = new Button();
             ValidateWordsBtn = new Button();
-            RefreshValidBtn = new Button();
             CalcNewWordBtn = new Button();
             PointsScoredLbl = new Label();
             DisplayPointsLabel = new Label();
@@ -65,7 +64,7 @@
             // ProgressLabel
             // 
             ProgressLabel.AutoSize = true;
-            ProgressLabel.Location = new Point(205, 146);
+            ProgressLabel.Location = new Point(352, 150);
             ProgressLabel.Name = "ProgressLabel";
             ProgressLabel.Size = new Size(52, 15);
             ProgressLabel.TabIndex = 1;
@@ -74,7 +73,7 @@
             // InstructionsLabel
             // 
             InstructionsLabel.AutoSize = true;
-            InstructionsLabel.Location = new Point(205, 232);
+            InstructionsLabel.Location = new Point(352, 236);
             InstructionsLabel.Name = "InstructionsLabel";
             InstructionsLabel.Size = new Size(126, 15);
             InstructionsLabel.TabIndex = 2;
@@ -90,7 +89,7 @@
             // 
             // MaskTextBox
             // 
-            MaskTextBox.Location = new Point(333, 98);
+            MaskTextBox.Location = new Point(480, 102);
             MaskTextBox.Name = "MaskTextBox";
             MaskTextBox.Size = new Size(100, 23);
             MaskTextBox.TabIndex = 4;
@@ -98,7 +97,7 @@
             // 
             // LineCheckMaskTextBox
             // 
-            LineCheckMaskTextBox.Location = new Point(333, 70);
+            LineCheckMaskTextBox.Location = new Point(480, 74);
             LineCheckMaskTextBox.Name = "LineCheckMaskTextBox";
             LineCheckMaskTextBox.Size = new Size(100, 23);
             LineCheckMaskTextBox.TabIndex = 5;
@@ -106,7 +105,7 @@
             // 
             // CheckWordTextBox
             // 
-            CheckWordTextBox.Location = new Point(333, 350);
+            CheckWordTextBox.Location = new Point(480, 354);
             CheckWordTextBox.Name = "CheckWordTextBox";
             CheckWordTextBox.Size = new Size(100, 23);
             CheckWordTextBox.TabIndex = 6;
@@ -115,14 +114,14 @@
             // 
             DisplayListBox.FormattingEnabled = true;
             DisplayListBox.ItemHeight = 15;
-            DisplayListBox.Location = new Point(12, 69);
+            DisplayListBox.Location = new Point(12, 73);
             DisplayListBox.Name = "DisplayListBox";
-            DisplayListBox.Size = new Size(187, 304);
+            DisplayListBox.Size = new Size(334, 304);
             DisplayListBox.TabIndex = 7;
             // 
             // LineCheckBtn
             // 
-            LineCheckBtn.Location = new Point(205, 69);
+            LineCheckBtn.Location = new Point(352, 73);
             LineCheckBtn.Name = "LineCheckBtn";
             LineCheckBtn.Size = new Size(122, 23);
             LineCheckBtn.TabIndex = 8;
@@ -132,7 +131,7 @@
             // 
             // ProcessBtn
             // 
-            ProcessBtn.Location = new Point(205, 98);
+            ProcessBtn.Location = new Point(352, 102);
             ProcessBtn.Name = "ProcessBtn";
             ProcessBtn.Size = new Size(122, 23);
             ProcessBtn.TabIndex = 9;
@@ -142,7 +141,7 @@
             // 
             // SortLengthBtn
             // 
-            SortLengthBtn.Location = new Point(205, 291);
+            SortLengthBtn.Location = new Point(352, 295);
             SortLengthBtn.Name = "SortLengthBtn";
             SortLengthBtn.Size = new Size(122, 23);
             SortLengthBtn.TabIndex = 10;
@@ -152,7 +151,7 @@
             // 
             // SortPointsBtn
             // 
-            SortPointsBtn.Location = new Point(205, 321);
+            SortPointsBtn.Location = new Point(352, 325);
             SortPointsBtn.Name = "SortPointsBtn";
             SortPointsBtn.Size = new Size(122, 23);
             SortPointsBtn.TabIndex = 11;
@@ -162,7 +161,7 @@
             // 
             // CheckWordBtn
             // 
-            CheckWordBtn.Location = new Point(205, 350);
+            CheckWordBtn.Location = new Point(352, 354);
             CheckWordBtn.Name = "CheckWordBtn";
             CheckWordBtn.Size = new Size(122, 23);
             CheckWordBtn.TabIndex = 12;
@@ -172,7 +171,7 @@
             // 
             // ProgressBar
             // 
-            ProgressBar.Location = new Point(205, 164);
+            ProgressBar.Location = new Point(352, 168);
             ProgressBar.Name = "ProgressBar";
             ProgressBar.Size = new Size(228, 23);
             ProgressBar.TabIndex = 13;
@@ -196,7 +195,7 @@
             gridTableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
             gridTableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
             gridTableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
-            gridTableLayout.Location = new Point(443, 66);
+            gridTableLayout.Location = new Point(590, 70);
             gridTableLayout.Name = "gridTableLayout";
             gridTableLayout.RowCount = 15;
             gridTableLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
@@ -221,7 +220,7 @@
             // 
             SortComboBox.FormattingEnabled = true;
             SortComboBox.Items.AddRange(new object[] { "Ascending", "Descending" });
-            SortComboBox.Location = new Point(334, 292);
+            SortComboBox.Location = new Point(481, 296);
             SortComboBox.Name = "SortComboBox";
             SortComboBox.Size = new Size(103, 23);
             SortComboBox.TabIndex = 15;
@@ -229,7 +228,7 @@
             // 
             // ListWordsBtn
             // 
-            ListWordsBtn.Location = new Point(446, 23);
+            ListWordsBtn.Location = new Point(593, 27);
             ListWordsBtn.Name = "ListWordsBtn";
             ListWordsBtn.Size = new Size(86, 23);
             ListWordsBtn.TabIndex = 16;
@@ -239,7 +238,7 @@
             // 
             // ValidateWordsBtn
             // 
-            ValidateWordsBtn.Location = new Point(658, 22);
+            ValidateWordsBtn.Location = new Point(805, 26);
             ValidateWordsBtn.Name = "ValidateWordsBtn";
             ValidateWordsBtn.Size = new Size(101, 23);
             ValidateWordsBtn.TabIndex = 17;
@@ -247,19 +246,9 @@
             ValidateWordsBtn.UseVisualStyleBackColor = true;
             ValidateWordsBtn.Click += ValidateWordsBtn_Click;
             // 
-            // RefreshValidBtn
-            // 
-            RefreshValidBtn.Location = new Point(538, 22);
-            RefreshValidBtn.Name = "RefreshValidBtn";
-            RefreshValidBtn.Size = new Size(114, 23);
-            RefreshValidBtn.TabIndex = 18;
-            RefreshValidBtn.Text = "Refresh Valid";
-            RefreshValidBtn.UseVisualStyleBackColor = true;
-            RefreshValidBtn.Click += RefreshValidBtn_Click;
-            // 
             // CalcNewWordBtn
             // 
-            CalcNewWordBtn.Location = new Point(446, 388);
+            CalcNewWordBtn.Location = new Point(593, 392);
             CalcNewWordBtn.Name = "CalcNewWordBtn";
             CalcNewWordBtn.Size = new Size(166, 49);
             CalcNewWordBtn.TabIndex = 19;
@@ -270,7 +259,7 @@
             // PointsScoredLbl
             // 
             PointsScoredLbl.AutoSize = true;
-            PointsScoredLbl.Location = new Point(205, 388);
+            PointsScoredLbl.Location = new Point(352, 392);
             PointsScoredLbl.Name = "PointsScoredLbl";
             PointsScoredLbl.Size = new Size(79, 15);
             PointsScoredLbl.TabIndex = 20;
@@ -279,7 +268,7 @@
             // DisplayPointsLabel
             // 
             DisplayPointsLabel.AutoSize = true;
-            DisplayPointsLabel.Location = new Point(205, 422);
+            DisplayPointsLabel.Location = new Point(352, 426);
             DisplayPointsLabel.Name = "DisplayPointsLabel";
             DisplayPointsLabel.Size = new Size(62, 15);
             DisplayPointsLabel.TabIndex = 21;
@@ -287,7 +276,7 @@
             // 
             // RefreshBoardBtn
             // 
-            RefreshBoardBtn.Location = new Point(633, 388);
+            RefreshBoardBtn.Location = new Point(780, 392);
             RefreshBoardBtn.Name = "RefreshBoardBtn";
             RefreshBoardBtn.Size = new Size(127, 49);
             RefreshBoardBtn.TabIndex = 22;
@@ -299,12 +288,11 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(772, 449);
+            ClientSize = new Size(919, 444);
             Controls.Add(RefreshBoardBtn);
             Controls.Add(DisplayPointsLabel);
             Controls.Add(PointsScoredLbl);
             Controls.Add(CalcNewWordBtn);
-            Controls.Add(RefreshValidBtn);
             Controls.Add(ValidateWordsBtn);
             Controls.Add(ListWordsBtn);
             Controls.Add(SortComboBox);
@@ -350,7 +338,6 @@
         private ComboBox SortComboBox;
         private Button ListWordsBtn;
         private Button ValidateWordsBtn;
-        private Button RefreshValidBtn;
         private Button CalcNewWordBtn;
         private Label PointsScoredLbl;
         private Label DisplayPointsLabel;

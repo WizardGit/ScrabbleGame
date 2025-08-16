@@ -356,5 +356,13 @@ namespace ScrabbleTests
             Assert.AreEqual(16, board1[7, 10].ValidValues.Count);
             Assert.AreEqual(17, board1[8, 9].ValidValues.Count);
         }
+
+        [TestMethod]
+        public void TestBoardcheck()
+        {
+            Board board1 = new Board();
+
+            Assert.AreEqual(64, board1.BoardCheck("abcdefg", null)[0].Count);
+        }
     }
 }
