@@ -94,6 +94,48 @@
             return intResult;
         }
 
+        public int PointsAt(int pIndex)
+        {
+            int intResult = 0;
+
+            foreach (Word word in wordList[pIndex])
+            {
+                word.CalculatePoints();
+                intResult += word.Points;
+            }
+
+            return intResult;
+        }
+
+        // I don't understand what this is doing...
+        /// <summary>
+        /// This is for sorting points for a line
+        /// </summary>
+        /// <param name="pAscending"></param>
+        public void SortPoints(bool pAscending)
+        {
+            // Precompute index + points for each word
+            var indexedPoints = wordList
+                .Select((word, index) => new
+                {
+                    Word = word,
+                    Index = index,
+                    Points = PointsAt(index)
+                })
+                .ToList();
+
+            // Sort using the precomputed points
+            indexedPoints.Sort((a, b) =>
+            {
+                return pAscending
+                    ? a.Points.CompareTo(b.Points)   // Ascending
+                    : b.Points.CompareTo(a.Points);  // Descending
+            });
+
+            // Rebuild the sorted pWordList
+            wordList = indexedPoints.Select(x => x.Word).ToList();
+        }
+
         // I don't understand what this is doing...
         public void SortPoints(bool pAscending, Board pBoard)
         {

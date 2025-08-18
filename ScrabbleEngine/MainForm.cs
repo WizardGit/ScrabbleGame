@@ -4,14 +4,8 @@ using System.Diagnostics;
 
 /*
  * TODO:
- *   what exactly is refresh checking?
- *
- *   does findnewword find wordsand multiple others words created?
- *   methodically test the new row check functionality
- *   duplicate that for the column check functionality
  *   change up the more front end methods to handle lists of lists and properly display that
- *   sort is broken because of listlistword
- *   we need to be able to handle if our letter is an empty square   
+ *   we need to be able to handle if our letter is an any square   
  * 
  * NOTE: with wildcard letters, it's gonna mark a letter not in the list of letters as used and then say the word is playable
  * once the word is played, it looks like a wildcard letter wasn't used, but it was.  For now, we're gonna do it ths way
@@ -23,8 +17,8 @@ namespace ScrabbleEngine
     public partial class MainForm : Form
     {
         private bool blnSortAscending;
-        private List<Word> lstWords;
-        private List<List<Word>> lstLstWords;
+        private UltWordList lstUltWords;
+        private bool blnLstIsLine;
         private Board dataBoard;
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -61,9 +55,9 @@ namespace ScrabbleEngine
             InitializeComponent();
             dataBoard = new Board();
             blnSortAscending = true;
-            lstWords = new List<Word>();
-            lstLstWords = new List<List<Word>>();
+            lstUltWords = new UltWordList();
             SortComboBox.SelectedIndex = 0;
+            blnLstIsLine = false;
             CreateBoard();
             HookUpTextChangedHandlers();
         }
@@ -176,13 +170,14 @@ namespace ScrabbleEngine
             Line line = new Line(strMask);
             line.LineCheck(strLetters, out List<Word> pLstStrWords, ProgressBar);
 
-            lstWords = pLstStrWords;
+            lstUltWords = new UltWordList(pLstStrWords, true);
+            blnLstIsLine = true;
 
             DisplayListBox.Items.Clear();
 
-            foreach (Word word in pLstStrWords)
+            for (int i = 0; i < lstUltWords.Length; i++)
             {
-                DisplayListBox.Items.Add(word.PrintWord(true, true));
+                DisplayListBox.Items.Add(lstUltWords.PrintWordListAt(i, true, false));
             }
         }
 
@@ -194,48 +189,32 @@ namespace ScrabbleEngine
             Line line = new Line(strMask);
             line.SimpleLineCheck(strLetters, out List<Word> pLstStrWords, ProgressBar);
 
-            lstWords = pLstStrWords;
-
+            lstUltWords = new UltWordList(pLstStrWords, true);
+            blnLstIsLine = true;
             DisplayListBox.Items.Clear();
 
-            foreach (Word word in pLstStrWords)
+            for (int i = 0; i < lstUltWords.Length; i++)
             {
-                DisplayListBox.Items.Add(word.PrintWord(true, false));
-            }
-        }
-
-        private void SortLengthBtn_Click(object sender, EventArgs e)
-        {
-            DisplayListBox.Items.Clear();
-
-            lstWords.Sort((a, b) =>
-            {
-                return blnSortAscending
-                    ? a.Length.CompareTo(b.Length)      // Ascending
-                    : b.Length.CompareTo(a.Length);     // Descending
-            });
-
-            //lstWords.Sort((a, b) => b.Points.CompareTo(a.Points));
-            foreach (Word word in lstWords)
-            {
-                DisplayListBox.Items.Add(word.PrintWord(true, true));
+                DisplayListBox.Items.Add(lstUltWords.PrintWordListAt(i, true, false));
             }
         }
 
         private void SortPointsBtn_Click(object sender, EventArgs e)
         {
+            if (blnLstIsLine == true)
+            {
+                lstUltWords.SortPoints(blnSortAscending);
+            }
+            else
+            {
+                lstUltWords.SortPoints(blnSortAscending, dataBoard);
+            }                
+
             DisplayListBox.Items.Clear();
 
-            lstWords.Sort((a, b) =>
-            {
-                return blnSortAscending
-                    ? a.Points.CompareTo(b.Points)      // Ascending
-                    : b.Points.CompareTo(a.Points);     // Descending
-            });
-
-            foreach (Word word in lstWords)
-            {
-                DisplayListBox.Items.Add(word.PrintWord(true, true));
+            for (int i = 0; i < lstUltWords.Length; i++)
+            {                
+                DisplayListBox.Items.Add(lstUltWords.PrintWordListAt(i, true, false));
             }
         }
 
@@ -272,13 +251,14 @@ namespace ScrabbleEngine
         {
             string strLetters = LettersTextbox.Text.ToLower().Trim();
 
-            UltWordList ultWordList = new UltWordList(dataBoard.BoardCheck(strLetters, ProgressBar), true);
+            lstUltWords = new UltWordList(dataBoard.BoardCheck(strLetters, ProgressBar), true);
+            blnLstIsLine = false;
 
             DisplayListBox.Items.Clear();
 
-            for (int i = 0; i < ultWordList.Length; i++)
+            for (int i = 0; i < lstUltWords.Length; i++)
             {
-                DisplayListBox.Items.Add(ultWordList.PrintWordListAt(i, true, true));
+                DisplayListBox.Items.Add(lstUltWords.PrintWordListAt(i, true, true));
             }         
         }
 
@@ -333,16 +313,7 @@ namespace ScrabbleEngine
                 }
             }
 
-            List<Word> results = new List<Word>();
-
-            //We got a ton of results, so we need to filter out duplicate results
-            foreach (Word word in lstWords)
-            {
-                if (word.InList(results) == false)
-                    results.Add(word);
-            }
-
-            return results;
+            return lstWords;
         }
 
         private void CalcNewWordBtn_Click(object sender, EventArgs e)

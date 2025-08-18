@@ -38,7 +38,6 @@
             DisplayListBox = new ListBox();
             LineCheckBtn = new Button();
             ProcessBtn = new Button();
-            SortLengthBtn = new Button();
             SortPointsBtn = new Button();
             CheckWordBtn = new Button();
             ProgressBar = new ProgressBar();
@@ -139,19 +138,9 @@
             ProcessBtn.UseVisualStyleBackColor = true;
             ProcessBtn.Click += ProcessBtn_Click;
             // 
-            // SortLengthBtn
-            // 
-            SortLengthBtn.Location = new Point(352, 295);
-            SortLengthBtn.Name = "SortLengthBtn";
-            SortLengthBtn.Size = new Size(122, 23);
-            SortLengthBtn.TabIndex = 10;
-            SortLengthBtn.Text = "Sort by Length";
-            SortLengthBtn.UseVisualStyleBackColor = true;
-            SortLengthBtn.Click += SortLengthBtn_Click;
-            // 
             // SortPointsBtn
             // 
-            SortPointsBtn.Location = new Point(352, 325);
+            SortPointsBtn.Location = new Point(356, 295);
             SortPointsBtn.Name = "SortPointsBtn";
             SortPointsBtn.Size = new Size(122, 23);
             SortPointsBtn.TabIndex = 11;
@@ -300,7 +289,6 @@
             Controls.Add(ProgressBar);
             Controls.Add(CheckWordBtn);
             Controls.Add(SortPointsBtn);
-            Controls.Add(SortLengthBtn);
             Controls.Add(ProcessBtn);
             Controls.Add(LineCheckBtn);
             Controls.Add(DisplayListBox);
@@ -330,7 +318,6 @@
         private ListBox DisplayListBox;
         private Button LineCheckBtn;
         private Button ProcessBtn;
-        private Button SortLengthBtn;
         private Button SortPointsBtn;
         private Button CheckWordBtn;
         private ProgressBar ProgressBar;
