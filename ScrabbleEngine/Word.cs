@@ -38,9 +38,14 @@ namespace ScrabbleEngine
             set { this.columnIndex = value; }
         }
 
+        /// <summary>
+        /// Creates a Word object using the provided string
+        /// Word can be empty string
+        /// </summary>
+        /// <param name="pStrWord">string parameter</param>
         public Word(string pStrWord)
         {
-            this.value = pStrWord.ToLower().Trim();
+            this.value = "";
             this.points = 0;
             this.letterList = new List<Letter>();
             rowIndex = -1;
@@ -48,31 +53,49 @@ namespace ScrabbleEngine
             isRow = false;
             isColumn = false;
 
-            foreach (char c in this.value)
+            if (pStrWord.Length > 0)
             {
-                letterList.Add(new Letter(c));
-            }
-            CalculatePoints();
+                this.value = pStrWord.ToLower().Trim();
+                foreach (char c in this.value)
+                {
+                    letterList.Add(new Letter(c));
+                }
+                CalculatePoints();
+            }            
         }
+        /// <summary>
+        /// Indexes through the word's char values
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public char this[int index]
         {
             get { return this.letterList[index].Value; }
             set { this.letterList[index].Value = value; }
         }
 
+        /// <summary>
+        /// Sets word as a row word
+        /// </summary>
         public void SetAsRow()
         {
             isRow = true;
             isColumn = false;
         }
 
+        /// <summary>
+        /// sets word as a column word
+        /// </summary>
         public void SetAsColumn()
         {
             isRow = false;
             isColumn = true;
         }
 
-        public void CalculatePoints()
+        /// <summary>
+        /// Calculates the points that the word is worth
+        /// </summary>
+        public int CalculatePoints()
         {
             int intTempPoints = 0;
             foreach(Letter c  in letterList)
@@ -80,8 +103,13 @@ namespace ScrabbleEngine
                 intTempPoints += c.Points;
             }
             this.points = intTempPoints;
+            return this.points;
         }
 
+        /// <summary>
+        /// Checks if word is nothing ""
+        /// </summary>
+        /// <returns></returns>
         public bool IsEmpty()
         {
             if (this.value == "")
@@ -91,6 +119,13 @@ namespace ScrabbleEngine
             return false;
         }
 
+        /// <summary>
+        /// Returns a string with the word formatted nicely with points/index if requested
+        /// if both indices are -1, will return [], else it will return one or both if one or both are not -1
+        /// </summary>
+        /// <param name="pblnPoints"></param>
+        /// <param name="pblnIndex"></param>
+        /// <returns></returns>
         public string PrintWord(bool pblnPoints, bool pblnIndex)
         {
             string strResults = this.value;            
@@ -104,9 +139,8 @@ namespace ScrabbleEngine
                         strResults += this.rowIndex + ", ";
                     else
                         strResults += this.rowIndex;
-                }                
-
-                if (this.rowIndex > -1)
+                }   
+                if (this.columnIndex > -1)
                     strResults += this.columnIndex;
                 strResults += "]";
             }            

@@ -33,9 +33,9 @@ namespace ScrabbleEngine
                     case 'u':
                     case 'l':
                     case 'n':
+                    case 'r':
                     case 's':
                     case 't':
-                    case 'r':
                         Points = 1;
                         break;
                     case 'd':
@@ -62,6 +62,7 @@ namespace ScrabbleEngine
                     case 'x':
                         Points = 8;
                         break;
+                    case 'q':
                     case 'z':
                         Points = 10;
                         break;
