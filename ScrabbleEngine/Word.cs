@@ -153,8 +153,14 @@ namespace ScrabbleEngine
             return strResults;
         }
 
-        
-        public void AddToList(ref List<Word> pLstWords, bool pCheckIndex = false)
+        /// <summary>
+        /// Adds this word to the specified list of words
+        /// If the value matches a word already in the list (or indexes) then it won't add it and returns false
+        /// If it does add the word, it returns true
+        /// </summary>
+        /// <param name="pLstWords"></param>
+        /// <param name="pCheckIndex"></param>
+        public bool AddToList(ref List<Word> pLstWords, bool pCheckIndex = false)
         {
             foreach (Word word in pLstWords)
             {
@@ -162,17 +168,23 @@ namespace ScrabbleEngine
                 {
                     if ((this.rowIndex == word.rowIndex) && (this.columnIndex == word.columnIndex))
                     {
-                        return;
+                        return false;
                     }
                 }
                 else if (this.Value == word.Value)
                 {
-                    return;
+                    return false;
                 }
             }
             pLstWords.Add(this);
+            return true;
         }
 
+        /// <summary>
+        /// Checks if this word is in the provided list of words
+        /// </summary>
+        /// <param name="pLstWords"></param>
+        /// <returns></returns>
         public bool InList(List<Word> pLstWords)
         {
             foreach(Word word in pLstWords)
@@ -189,9 +201,20 @@ namespace ScrabbleEngine
             return false;
         }
 
+        /// <summary>
+        /// Completely separate from the word class - just removes the specified letter from the letters if it can
+        /// </summary>
+        /// <param name="pcharLetter"></param>
+        /// <param name="pstrLetters"></param>
+        /// <returns>True if it removed the letter, false if not</returns>
         public bool RemoveLetter(char pcharLetter, ref string pstrLetters)
         {
             char[] charListLetters = pstrLetters.ToCharArray();
+
+            if (char.IsLetter(pcharLetter) == false)
+            {
+                throw new Exception("Letter to remove is not an actual letter: " + pcharLetter.ToString());
+            }
 
             for (int i = 0; i < pstrLetters.Length; i++)
             {
@@ -215,6 +238,11 @@ namespace ScrabbleEngine
             return false;
         }
 
+        /// <summary>
+        /// Completely separate from the word class - just checks if one of the pstrLetters is a Letter.NoLetter
+        /// </summary>
+        /// <param name="pstrLetters"></param>
+        /// <returns></returns>
         public bool OneLetterUsed(string pstrLetters)
         {
             for (int i = 0; i < pstrLetters.Length; i++)

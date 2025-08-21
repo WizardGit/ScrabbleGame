@@ -22,6 +22,7 @@ namespace ScrabbleTests
             Assert.AreEqual('w', word[4]);
             Assert.AreEqual('d', word[7]);
             Assert.AreEqual(false, word.IsEmpty());
+            Assert.AreEqual(8, word.Length);
 
             word = new Word("");
             Assert.AreEqual("", word.Value);
@@ -81,6 +82,59 @@ namespace ScrabbleTests
             Assert.AreEqual("quotient [2, 9] (17)", word.PrintWord(true, true));
 
             Assert.AreEqual(17, word.CalculatePoints());
+        }
+
+        [TestMethod]
+        public void TestWordsInList()
+        {
+            Word word = new Word("testWord");
+            Word word1 = new Word("quotient");
+            Word word2 = new Word("uncle");
+            Word word3 = new Word("fellow");
+
+            List<Word> testWordList = new List<Word>();
+            testWordList.Add(word1);
+            testWordList.Add(word2);
+            testWordList.Add(word3);  
+
+            Assert.AreEqual(false, word.InList(testWordList));
+            Assert.AreEqual(true, word3.InList(testWordList));
+            word.AddToList(ref testWordList, false);
+            Assert.AreEqual(true, word.InList(testWordList));
+
+            Assert.AreEqual(4, testWordList.Count);
+            word.AddToList(ref testWordList, true);
+            Assert.AreEqual(4, testWordList.Count);
+        }
+
+        [TestMethod]
+        public void TestLetterMethods()
+        {
+            Word word = new Word("");
+
+            string testLetters = "-------";
+            Assert.AreEqual(true, word.OneLetterUsed(testLetters));
+            testLetters = "gsdfgoc";            
+            Assert.AreEqual(false, word.OneLetterUsed(testLetters));
+            testLetters = "asdfgo-";
+            Assert.AreEqual(true, word.OneLetterUsed(testLetters));
+            testLetters = "-sdfgoc";
+            Assert.AreEqual(true, word.OneLetterUsed(testLetters));
+
+            Assert.AreEqual(true, word.RemoveLetter('c', ref testLetters));
+            Assert.AreEqual("-sdfgo-", testLetters);
+            Assert.AreEqual(false, word.RemoveLetter('a', ref testLetters));
+            Assert.AreEqual("-sdfgo-", testLetters);
+            testLetters = "*sdf*o-";
+            Assert.AreEqual(true, word.RemoveLetter('a', ref testLetters));
+            Assert.AreEqual("-sdf*o-", testLetters);
+            Assert.AreEqual(true, word.RemoveLetter('a', ref testLetters));
+            Assert.AreEqual("-sdf-o-", testLetters);
+
+            Assert.ThrowsException<Exception>(() =>
+            {
+                word.RemoveLetter('&', ref testLetters);
+            });
         }
     }
 }
