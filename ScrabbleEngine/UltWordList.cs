@@ -1,6 +1,6 @@
 ﻿namespace ScrabbleEngine
 {
-    internal class UltWordList
+    public class UltWordList
     {
         private List<List<Word>> wordList;  
         

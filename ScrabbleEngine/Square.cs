@@ -49,6 +49,8 @@ namespace ScrabbleEngine
             }
 
             validValues = new List<Letter>();
+            //Gonna get set in SetLetter method, but declaring it additionally here to keep visual studio happy
+            letter = new Letter(pstrValue);
             SetLetter(pstrValue);
         } 
 

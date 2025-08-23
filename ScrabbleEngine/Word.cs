@@ -253,6 +253,15 @@ namespace ScrabbleEngine
             return false;
         }        
 
+        /// <summary>
+        /// Checks if word can be placed at the specified spot and still work nicely
+        /// </summary>
+        /// <param name="pintStartIndex"></param>
+        /// <param name="pLine"></param>
+        /// <param name="pstrLetters"></param>
+        /// <param name="pblnMustHitMask"></param>
+        /// <param name="pblnMustMatchLength"></param>
+        /// <returns></returns>
         public bool WordMatchMask(int pintStartIndex, Line pLine, string pstrLetters, bool pblnMustHitMask = true, bool pblnMustMatchLength = false)
         {
             if ((pblnMustMatchLength == true) && (this.Length != pLine.Length))

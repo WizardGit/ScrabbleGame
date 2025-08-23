@@ -136,5 +136,44 @@ namespace ScrabbleTests
                 word.RemoveLetter('&', ref testLetters);
             });
         }
+
+        [TestMethod]
+        public void TestWordMatchMask()
+        {
+            Line line = new Line("b--------------");
+            Word word = new Word("");
+
+            //Fail because word empty
+            Assert.AreEqual(false, word.WordMatchMask(0, line, "abcdefg", true, false));
+
+            //pass
+            word = new Word("bad");
+            Assert.AreEqual(true, word.WordMatchMask(0, line, "abcdefg", true, false));
+
+            //fail because bbad isn't word
+            word = new Word("bad");
+            Assert.AreEqual(false, word.WordMatchMask(1, line, "abcdefg", true, false));
+
+            //fail because bad can't reach the b in the mask
+            word = new Word("bad");
+            line = new Line("-----------b---");
+            Assert.AreEqual(false, word.WordMatchMask(0, line, "abcdefg", true, false));
+
+            word = new Word("doubt");
+            line = new Line("----t------b---");
+            Assert.AreEqual(true, word.WordMatchMask(0, line, "aocdeub", true, false));
+
+            word = new Word("doubt");
+            line = new Line("-----");            
+            Assert.AreEqual(true, word.WordMatchMask(0, line, "tocdeub", false, true));
+
+            word = new Word("bead");
+            line = new Line("b-a----b--d----");
+            Assert.AreEqual(true, word.WordMatchMask(7, line, "abcdefg", true, false));
+
+            word = new Word("bead");
+            line = new Line("b-a----b--d----");
+            Assert.AreEqual(false, word.WordMatchMask(8, line, "abcdefg", true, false));
+        }
     }
 }

@@ -217,7 +217,7 @@
             // 
             // ListWordsBtn
             // 
-            ListWordsBtn.Location = new Point(593, 27);
+            ListWordsBtn.Location = new Point(590, 39);
             ListWordsBtn.Name = "ListWordsBtn";
             ListWordsBtn.Size = new Size(86, 23);
             ListWordsBtn.TabIndex = 16;
@@ -227,7 +227,7 @@
             // 
             // ValidateWordsBtn
             // 
-            ValidateWordsBtn.Location = new Point(805, 26);
+            ValidateWordsBtn.Location = new Point(806, 39);
             ValidateWordsBtn.Name = "ValidateWordsBtn";
             ValidateWordsBtn.Size = new Size(101, 23);
             ValidateWordsBtn.TabIndex = 17;
@@ -277,7 +277,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(919, 444);
+            ClientSize = new Size(919, 462);
             Controls.Add(RefreshBoardBtn);
             Controls.Add(DisplayPointsLabel);
             Controls.Add(PointsScoredLbl);

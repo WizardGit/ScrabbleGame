@@ -8,6 +8,7 @@ namespace ScrabbleEngine
     {
         private List<string> dictionary;
         private DAWG dictDawg;
+        private string filePath = "ScrabbleWords.txt";
 
         public int Length
         {
@@ -18,12 +19,10 @@ namespace ScrabbleEngine
         {
             get { return dictionary; }
         }
-        public Dictionary(bool pBuildDawg = false)
-        {
-            string filePath = "ScrabbleWords.txt";
+        public Dictionary()
+        {            
             dictionary = new List<string>();
-            if (pBuildDawg == true)
-                dictDawg = new DAWG(filePath);
+            dictDawg = new DAWG(filePath);
 
             if (!File.Exists(filePath))
             {
