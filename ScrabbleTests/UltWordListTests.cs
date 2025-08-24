@@ -38,9 +38,26 @@ namespace ScrabbleTests
             listsWords.Add(words3);
             listsWords.Add(words4);
 
-            UltWordList thelist = new UltWordList(listsWords);
+            UltWordList thelist = new UltWordList(listsWords, false);
             Assert.AreEqual("nice", thelist.PrintWordListAt(0, false, false));
             Assert.AreEqual("word & garbage", thelist.PrintWordListAt(2, false, false));
+            Assert.AreEqual(4, thelist.Length);
+
+            thelist = new UltWordList(listsWords, true);
+            Assert.AreEqual("nice", thelist.PrintWordListAt(0, false, false));
+            Assert.AreEqual(1, thelist.Length);
+
+            thelist = new UltWordList(words3, false);
+            Assert.AreEqual("word & garbage", thelist.PrintWordListAt(0, false, false));
+            Assert.AreEqual(1, thelist.Length);
+
+            thelist = new UltWordList(words3, true);
+            Assert.AreEqual("word", thelist.PrintWordListAt(0, false, false));
+            Assert.AreEqual("garbage", thelist.PrintWordListAt(1, false, false));
+            Assert.AreEqual(2, thelist.Length);
+
+            thelist = new UltWordList();
+            Assert.AreEqual(0, thelist.Length);
         }
     }
 }

@@ -2,8 +2,8 @@
 {
     public class UltWordList
     {
-        private List<List<Word>> wordList;  
-        
+        private List<List<Word>> wordList;
+
         public int Length
         {
             get { return wordList.Count; }
@@ -14,13 +14,14 @@
             return wordList;
         }
 
-        public UltWordList(List<List<Word>> wordList)
-        {
-            this.wordList = wordList;
-        }
-
+        /// <summary>
+        /// Sets internal wordList to pWordList
+        /// If spread == true, then it will only take the first list from the list of list and spread each element in its own list
+        /// </summary>
+        /// <param name="pWordList"></param>
+        /// <param name="pblnSpread"></param>
         public UltWordList(List<List<Word>> pWordList, bool pblnSpread)
-        {   
+        {
             if (pblnSpread == true)
             {
                 this.wordList = new List<List<Word>>();
@@ -36,9 +37,16 @@
             else
             {
                 this.wordList = pWordList;
-            }            
+            }
         }
 
+        /// <summary>
+        /// Sets internal wordList to pWordList
+        /// If spread == true, then it will take each object in the list and create a new list just for that word.
+        /// Otherwise, it just puts the entire list as the first list of our internallist
+        /// </summary>
+        /// <param name="wordList"></param>
+        /// <param name="pblnSpread"></param>
         public UltWordList(List<Word> wordList, bool pblnSpread)
         {
             this.wordList = new List<List<Word>>();
@@ -58,11 +66,21 @@
             }
         }
 
+        /// <summary>
+        /// If nothing is specified, just set the internal list to a new list of list
+        /// </summary>
         public UltWordList()
         {
             wordList = new List<List<Word>>();
         }
 
+        /// <summary>
+        /// Prints the words in the list at the specified index
+        /// </summary>
+        /// <param name="pIndex"></param>
+        /// <param name="pblnPoints"></param>
+        /// <param name="pblnIndex"></param>
+        /// <returns></returns>
         public string PrintWordListAt(int pIndex, bool pblnPoints, bool pblnIndex)
         {
             string strResult = "";
