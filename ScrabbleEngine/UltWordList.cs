@@ -100,6 +100,13 @@
             return strResult;
         }
 
+        /// <summary>
+        /// Calculates points for all the words at specified index, but calculates the points using the squares on the specified board
+        /// Note that this requires the words in our ultwordlist to have their indexes set so we know where on the board they are
+        /// </summary>
+        /// <param name="pIndex"></param>
+        /// <param name="pBoard"></param>
+        /// <returns></returns>
         public int PointsAt(int pIndex, Board pBoard)
         {
             int intResult = 0;
@@ -112,6 +119,11 @@
             return intResult;
         }
 
+        /// <summary>
+        /// Calculates points for all the words at specified index
+        /// </summary>
+        /// <param name="pIndex"></param>
+        /// <returns></returns>
         public int PointsAt(int pIndex)
         {
             int intResult = 0;
@@ -125,9 +137,8 @@
             return intResult;
         }
 
-        // I don't understand what this is doing...
         /// <summary>
-        /// This is for sorting points for a line
+        /// Sort words in the list according to their points scored
         /// </summary>
         /// <param name="pAscending"></param>
         public void SortPoints(bool pAscending)
@@ -154,7 +165,11 @@
             wordList = indexedPoints.Select(x => x.Word).ToList();
         }
 
-        // I don't understand what this is doing...
+        /// <summary>
+        /// Sorts Words in the list according to their points scored on the specified board
+        /// </summary>
+        /// <param name="pAscending"></param>
+        /// <param name="pBoard"></param>
         public void SortPoints(bool pAscending, Board pBoard)
         {
             // Precompute index + points for each word
