@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Concurrent;
+using System.Text;
 
 namespace ScrabbleEngine
 {
@@ -21,21 +22,54 @@ namespace ScrabbleEngine
             } 
         }
 
+        /// <summary>
+        /// Gets and sets char value in the square at the indexed spot
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public char this[int index]
         {
             get { return this.validSquares[index].Value; }
             set { this.validSquares[index].Value = value; }
         }
+
+        /// <summary>
+        /// Returns the square at the specified index
+        /// </summary>
+        /// <param name="pIndex"></param>
+        /// <returns></returns>
         public Square GetSquare(int pIndex)
         {
             return validSquares[pIndex];
         }
 
+        /// <summary>
+        /// Adds a square to our line
+        /// </summary>
+        /// <param name="pSquare"></param>
         public void AddSquare(Square pSquare)
         {
             validSquares.Add(pSquare);
         }
 
+        /// <summary>
+        /// return the string value of all the squares in the line
+        /// </summary>
+        /// <returns></returns>
+        public string PrintLine()
+        {
+            StringBuilder retString = new StringBuilder();
+            foreach(Square square in validSquares)
+            {
+                retString.Append(square.Value);
+            }
+            return retString.ToString();
+        }
+
+        /// <summary>
+        /// Returns true if the line has no squares in it
+        /// </summary>
+        /// <returns></returns>
         public bool IsEmpty()
         {
             foreach( Square square in validSquares)

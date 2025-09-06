@@ -30,11 +30,12 @@ namespace ScrabbleEngine
             var current = root;
             foreach (var c in word)
             {
-                if (!current.Children.ContainsKey(c))
+                if (!current.Children.TryGetValue(c, out DAWGNode? value))
                 {
-                    current.Children[c] = new DAWGNode();
+                    value = new DAWGNode();
+                    current.Children[c] = value;
                 }
-                current = current.Children[c];
+                current = value;
             }
             current.IsWordEnd = true;
         }
@@ -45,11 +46,11 @@ namespace ScrabbleEngine
             var current = root;
             foreach (var c in word.ToLower())
             {
-                if (!current.Children.ContainsKey(c))
+                if (!current.Children.TryGetValue(c, out DAWGNode? value))
                 {
                     return false;
                 }
-                current = current.Children[c];
+                current = value;
             }
             return current.IsWordEnd;
         }
