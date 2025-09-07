@@ -176,7 +176,7 @@ namespace ScrabbleEngine
 
             for (int i = 0; i < lstUltWords.Length; i++)
             {
-                DisplayListBox.Items.Add(lstUltWords.PrintWordListAt(i, true, false));
+                DisplayListBox.Items.Add(lstUltWords.PrintWordListAt(i, true, true));
             }
         }
 

@@ -63,7 +63,7 @@
             // ProgressLabel
             // 
             ProgressLabel.AutoSize = true;
-            ProgressLabel.Location = new Point(352, 150);
+            ProgressLabel.Location = new Point(352, 192);
             ProgressLabel.Name = "ProgressLabel";
             ProgressLabel.Size = new Size(52, 15);
             ProgressLabel.TabIndex = 1;
@@ -104,7 +104,7 @@
             // 
             // CheckWordTextBox
             // 
-            CheckWordTextBox.Location = new Point(480, 354);
+            CheckWordTextBox.Location = new Point(246, 39);
             CheckWordTextBox.Name = "CheckWordTextBox";
             CheckWordTextBox.Size = new Size(100, 23);
             CheckWordTextBox.TabIndex = 6;
@@ -113,9 +113,9 @@
             // 
             DisplayListBox.FormattingEnabled = true;
             DisplayListBox.ItemHeight = 15;
-            DisplayListBox.Location = new Point(12, 73);
+            DisplayListBox.Location = new Point(12, 74);
             DisplayListBox.Name = "DisplayListBox";
-            DisplayListBox.Size = new Size(334, 304);
+            DisplayListBox.Size = new Size(334, 364);
             DisplayListBox.TabIndex = 7;
             // 
             // LineCheckBtn
@@ -140,7 +140,7 @@
             // 
             // SortPointsBtn
             // 
-            SortPointsBtn.Location = new Point(356, 295);
+            SortPointsBtn.Location = new Point(352, 131);
             SortPointsBtn.Name = "SortPointsBtn";
             SortPointsBtn.Size = new Size(122, 23);
             SortPointsBtn.TabIndex = 11;
@@ -150,9 +150,9 @@
             // 
             // CheckWordBtn
             // 
-            CheckWordBtn.Location = new Point(352, 354);
+            CheckWordBtn.Location = new Point(148, 40);
             CheckWordBtn.Name = "CheckWordBtn";
-            CheckWordBtn.Size = new Size(122, 23);
+            CheckWordBtn.Size = new Size(92, 23);
             CheckWordBtn.TabIndex = 12;
             CheckWordBtn.Text = "Check Word";
             CheckWordBtn.UseVisualStyleBackColor = true;
@@ -160,7 +160,7 @@
             // 
             // ProgressBar
             // 
-            ProgressBar.Location = new Point(352, 168);
+            ProgressBar.Location = new Point(352, 210);
             ProgressBar.Name = "ProgressBar";
             ProgressBar.Size = new Size(228, 23);
             ProgressBar.TabIndex = 13;
@@ -209,9 +209,9 @@
             // 
             SortComboBox.FormattingEnabled = true;
             SortComboBox.Items.AddRange(new object[] { "Ascending", "Descending" });
-            SortComboBox.Location = new Point(481, 296);
+            SortComboBox.Location = new Point(480, 131);
             SortComboBox.Name = "SortComboBox";
-            SortComboBox.Size = new Size(103, 23);
+            SortComboBox.Size = new Size(100, 23);
             SortComboBox.TabIndex = 15;
             SortComboBox.SelectedIndexChanged += SortComboBox_SelectedIndexChanged;
             // 
@@ -248,7 +248,7 @@
             // PointsScoredLbl
             // 
             PointsScoredLbl.AutoSize = true;
-            PointsScoredLbl.Location = new Point(352, 392);
+            PointsScoredLbl.Location = new Point(352, 324);
             PointsScoredLbl.Name = "PointsScoredLbl";
             PointsScoredLbl.Size = new Size(79, 15);
             PointsScoredLbl.TabIndex = 20;
@@ -257,7 +257,7 @@
             // DisplayPointsLabel
             // 
             DisplayPointsLabel.AutoSize = true;
-            DisplayPointsLabel.Location = new Point(352, 426);
+            DisplayPointsLabel.Location = new Point(352, 362);
             DisplayPointsLabel.Name = "DisplayPointsLabel";
             DisplayPointsLabel.Size = new Size(62, 15);
             DisplayPointsLabel.TabIndex = 21;
